@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search</title>
+    <style>
+        :root {
+            --primary-color: #2962ff;
+            --hover-color: #1565c0;
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+        }
+
+        :root.dark-mode {
+            --primary-color: #4f8fff;
+            --hover-color: #2d7fff;
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-container {
+            text-align: center;
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            width: 100%;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 16px;
+            border: 2px solid var(--primary-color);
+            border-radius: 30px;
+            outline: none;
+            box-sizing: border-box;
+            background-color: white;
+            color: #333;
+        }
+
+        .search-button {
+            padding: 12px 30px;
+            font-size: 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .search-button:hover {
+            background-color: var(--hover-color);
+        }
+
+        .popular-searches {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .popular-searches a {
+            display: inline-block;
+            margin: 5px;
+            padding: 8px 15px;
+            background-color: rgba(41, 98, 255, 0.1);
+            color: var(--primary-color);
+            text-decoration: none;
+            border-radius: 15px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .popular-searches a:hover {
+            background-color: rgba(41, 98, 255, 0.2);
+        }
+
+        @media (max-width: 600px) {
+            .search-container {
+                padding: 20px;
+            }
+
+            .logo {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <div class="logo">Browser Search</div>
+        <form onsubmit="handleSearch(event)">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="Ne aramak istersiniz?" autofocus>
+            </div>
+            <button type="submit" class="search-button">Ara</button>
+        </form>
+        <div class="popular-searches">
+            <a href="#" onclick="searchFor('haberler')">Haberler</a>
+            <a href="#" onclick="searchFor('hava durumu')">Hava Durumu</a>
+            <a href="#" onclick="searchFor('spor')">Spor</a>
+            <a href="#" onclick="searchFor('teknoloji')">Teknoloji</a>
+        </div>
+    </div>
+
+    <script>
+        // Sayfa yüklendiğinde dark mode kontrolü
+        document.addEventListener('DOMContentLoaded', async () => {
+            const isDarkMode = await window.electronAPI.isDarkMode();
+            document.documentElement.classList.toggle('dark-mode', isDarkMode);
+        });
+
+        // Arama işlevi
+        function handleSearch(event) {
+            event.preventDefault();
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            if (searchTerm) {
+                search(searchTerm);
+            }
+        }
+
+        // Popüler aramalar için arama işlevi
+        function searchFor(term) {
+            document.getElementById('searchInput').value = term;
+            search(term);
+        }
+
+        // Ana arama fonksiyonu
+        function search(term) {
+            // Arama terimi URL-safe hale getirilir
+            const encodedTerm = encodeURIComponent(term);
+            // Varsayılan olarak DuckDuckGo kullanıyoruz (gizlilik odaklı)
+            const searchUrl = `https://duckduckgo.com/?q=${encodedTerm}`;
+            window.electronAPI.navigateTo(searchUrl);
+        }
+    </script>
+</body>
+</html>

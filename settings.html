@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Browser Settings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2962ff;
+            --hover-color: #1565c0;
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+            --toolbar-bg: white;
+            --input-bg: #f8f9fa;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0,0,0,0.1);
+            --hover-bg: #f0f0f0;
+            --transition-speed: 0.3s;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+        }
+
+        :root.dark-mode {
+            --primary-color: #4f8fff;
+            --hover-color: #2d7fff;
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --toolbar-bg: #2d2d2d;
+            --input-bg: #3d3d3d;
+            --border-color: #4d4d4d;
+            --shadow-color: rgba(0,0,0,0.3);
+            --hover-bg: #3d3d3d;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn:hover {
+            background-color: var(--hover-color);
+        }
+
+        .btn.success {
+            background-color: var(--success-color);
+        }
+
+        .btn.success:hover {
+            background-color: #218838;
+        }
+
+        .settings-card {
+            background-color: var(--toolbar-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        .settings-card h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-size: 18px;
+        }
+
+        .settings-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .settings-option:last-child {
+            border-bottom: none;
+        }
+
+        .settings-option-label {
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .settings-option-description {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .settings-option-control {
+            flex-shrink: 0;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-color);
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        select, input[type="text"], input[type="number"] {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            min-width: 150px;
+        }
+
+        select:focus, input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(41,98,255,0.2);
+        }
+
+        .tab-container {
+            margin-bottom: 20px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            padding: 10px 16px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-color);
+            transition: border-color 0.2s;
+        }
+
+        .tab-button.active {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 4px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background-color: var(--success-color);
+        }
+
+        .notification.error {
+            background-color: var(--error-color);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            color: #888;
+            font-size: 12px;
+        }
+
+        .download-path {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-cog"></i> Browser Settings</h1>
+            <div class="header-buttons">
+                <button id="saveButton" class="btn success">
+                    <i class="fas fa-save"></i> Save All
+                </button>
+                <button id="backButton" class="btn">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+        </div>
+
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" data-tab="general">General</button>
+                <button class="tab-button" data-tab="privacy">Privacy & Security</button>
+                <button class="tab-button" data-tab="advanced">Advanced</button>
+            </div>
+
+            <div class="tab-content active" id="general">
+                <div class="settings-card">
+                    <h2><i class="fas fa-palette"></i> Appearance</h2>
+                    <div class="settings-option">
+                        <div class="settings-option-label">
+                            <span>Dark Mode</span>
+                            <div class="settings-option-description">Enable dark mode for a more comfortable viewing experience in low light</div>
+                        </div>
+                        <div class="settings-option-control">
+                            <label class="switch">
+                                <input type="checkbox" id="darkModeToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-option">
+                        <div class="settings-option-label">
+                            <span>Default Zoom Level</span>
+                            <div class="settings-option-description">Set the default zoom level for new pages (50% - 200%)</div>
+                        </div>
+                        <div class="settings-option-control">
+                            <input type="number" id="defaultZoomLevel" min="0.5" max="2" step="0.1" value="1.0">
+                        </div>
+                    </div>
+
+                    <div class="settings-option">
+                        <div class="settings-option-label">
+                            <span>Font Size</span>
+                            <div class="settings-option-description">Default font size for web pages</div>
+                        </div>
+                        <div class="settings-option-control">
+                            <select id="fontSize">
+                                <option value="12">Small (12px)</option>
+                                <option value="14" selected>Medium (14px)</option>
+                                <option value="16">Large (16px)</option>
+                                <option value="18">Extra Large (18px)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h2><i class="fas fa-rocket"></i> Startup</h2>
+                    <div class="settings-option">
+                        <div class="settings-option-label">
+                            <span>Homepage</span>
+                            <div class="settings-option-description">Set the page that loads when you click the home button</div>
+                        </div>
+                        <div class="settings-option-control">
+                            <input type="text" id="homeUrlInput" placeholder="Enter URL" value="https://www.google.com">
+                        </div>
+                    </div>
+
+                    <div class="settings-option">
+                        <div class="settings-option-label">
+                            <span>On Startup</span>
+                            <div class="settings-option-description">Choose what to show when the browser starts</div>
+                        </div>
+                        <div class="settings-option-control">
+                            <select id="startupOption">
+                                <option value="homepage">Open Homepage</option>
+                                <option value="blank">Open Blank Page</option>
+                                <option value="last">Continue Where You Left Off</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="privacy">
+                <div class="settings-card">
+                    <h2><i class="fas fa-shield-alt"></i> Privacy & Security</h2>
+                    <div class="settings-option">
+                        <div class="settings-option-label">
+                            <span>JavaScript</span>
+                            <div class="settings-option-description">Enable JavaScript execution on websites</div>
+                        </div>
+                        <div class="settings-option-control">
+                            <label class="switch">
+                                <input type="checkbox" id="jsToggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-option">
+                        <div class="settings-option-label">
+                            <span>Block Pop-ups</span>
+                            <div class="settings-option-description">Prevent websites from opening pop-up windows</div>
+                        </div>
+                        <div class="settings-option-control">
+                            <label class="switch">
+                                <input type="checkbox" id="blockPopups" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-option">
+                        <div class="settings-option-label">
+                            <span>Cookies</span>
+                            <div class="settings-option-description">Allow websites to save and read cookie data</div>
+                        </div>
+                        <div class="settings-option-control">
+                            <select id="cookieSettings">
+                                <option value="allow">Allow All Cookies</option>
+                                <option value="block-third-party">Block Third-party Cookies</option>
+                                <option value="block-all">Block All Cookies</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="settings-option">
+                        <div class="settings-option-label">
+                            <span>Clear Browsing Data</span>
+                            <div class="settings-option-description">Clear your browsing history, cache, and cookies</div>
+                        </div>
+                        <div class="settings-option-control">
+                            <button id="clearBrowsingDataButton" class="btn">
+                                <i class="fas fa-trash"></i> Clear Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="advanced">
+                <div class="settings-card">
+                    <h2><i class="fas fa-download"></i> Downloads</h2>
+                    <div class="settings-option">
+                        <div class="settings-option-label">
+                            <span>Download Location</span>
+                            <div class="settings-option-description">Choose where downloaded files are saved</div>
+                            <div class="download-path" id="downloadPath">Downloads folder</div>
+                        </div>
+                        <div class="settings-option-control">
+                            <button id="downloadLocationButton" class="btn">
+                                <i class="fas fa-folder"></i> Choose Folder
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="settings-option">
+                        <div class="settings-option-label">
+                            <span>Ask Where to Save</span>
+                            <div class="settings-option-description">Ask where to save each file before downloading</div>
+                        </div>
+                        <div class="settings-option-control">
+                            <label class="switch">
+                                <input type="checkbox" id="askDownloadLocation">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h2><i class="fas fa-info-circle"></i> System Information</h2>
+                    <div class="settings-option">
+                        <div class="settings-option-label">
+                            <span>Browser Version</span>
+                            <div class="settings-option-description">Current version of the browser</div>
+                        </div>
+                        <div class="settings-option-control">
+                            <span id="browserVersion">1.0.0</span>
+                        </div>
+                    </div>
+
+                    <div class="settings-option">
+                        <div class="settings-option-label">
+                            <span>User Agent</span>
+                            <div class="settings-option-description">Browser identification string</div>
+                        </div>
+                        <div class="settings-option-control">
+                            <button id="showUserAgentButton" class="btn">
+                                <i class="fas fa-eye"></i> Show
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h2><i class="fas fa-tools"></i> Developer Tools</h2>
+                    <div class="settings-option">
+                        <div class="settings-option-label">
+                            <span>Reset All Settings</span>
+                            <div class="settings-option-description">Reset all settings to their default values</div>
+                        </div>
+                        <div class="settings-option-control">
+                            <button id="resetButton" class="btn" style="background-color: var(--error-color);">
+                                <i class="fas fa-undo"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Browser Settings v1.0 - Last saved: <span id="lastSaved">Never</span></p>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // Varsayılan ayarlar
+        const defaultSettings = {
+            homeUrl: 'https://www.google.com',
+            defaultZoom: 1.0,
+            jsEnabled: true,
+            darkMode: false,
+            fontSize: 14,
+            startupOption: 'homepage',
+            blockPopups: true,
+            cookieSettings: 'allow',
+            downloadPath: 'Downloads',
+            askDownloadLocation: false
+        };
+
+        // Mevcut ayarlar
+        let settings = { ...defaultSettings };
+        let hasUnsavedChanges = false;
+
+        // Sayfa yüklendiğinde başlat
+        document.addEventListener('DOMContentLoaded', initializeSettings);
+
+        // Ayarları başlat
+        async function initializeSettings() {
+            try {
+                // Ana süreçten ayarları al
+                settings = await window.electronAPI.getSettings() || defaultSettings;
+                
+                // Karanlık modu uygula
+                document.documentElement.classList.toggle('dark-mode', settings.darkMode);
+
+                // Form alanlarını mevcut ayarlarla doldur
+                document.getElementById('darkModeToggle').checked = settings.darkMode;
+                document.getElementById('defaultZoomLevel').value = settings.defaultZoom;
+                document.getElementById('homeUrlInput').value = settings.homeUrl;
+                document.getElementById('jsToggle').checked = settings.jsEnabled;
+                document.getElementById('fontSize').value = settings.fontSize;
+                document.getElementById('startupOption').value = settings.startupOption;
+                document.getElementById('blockPopups').checked = settings.blockPopups;
+                document.getElementById('cookieSettings').value = settings.cookieSettings;
+                document.getElementById('askDownloadLocation').checked = settings.askDownloadLocation;
+                document.getElementById('downloadPath').textContent = settings.downloadPath;
+
+                // Tarayıcı sürümünü ayarla
+                const version = await window.electronAPI.getBrowserVersion();
+                document.getElementById('browserVersion').textContent = version || '1.0.0';
+
+                updateLastSaved();
+            } catch (error) {
+                console.error('Settings initialization error:', error);
+                showNotification('Ayarlar yüklenirken hata oluştu', 'error');
+            }
+        }
+
+        // Bildirim göster
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            // Hide notification after 3 seconds
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Update last saved time
+        function updateLastSaved() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString();
+            document.getElementById('lastSaved').textContent = `Last saved: ${timeStr}`;
+        }
+
+        // Mark as changed
+        function markAsChanged() {
+            hasUnsavedChanges = true;
+            document.getElementById('saveButton').style.background = 'var(--primary-color)';
+        }
+
+        // Save all settings
+        async function saveAllSettings() {
+            try {
+                // Tüm ayarları topla
+                const newSettings = {
+                    darkMode: document.getElementById('darkModeToggle').checked,
+                    defaultZoom: parseFloat(document.getElementById('defaultZoomLevel').value) || 1.0,
+                    homeUrl: document.getElementById('homeUrlInput').value || 'https://www.google.com',
+                    jsEnabled: document.getElementById('jsToggle').checked,
+                    fontSize: parseInt(document.getElementById('fontSize').value) || 14,
+                    startupOption: document.getElementById('startupOption').value,
+                    blockPopups: document.getElementById('blockPopups').checked,
+                    cookieSettings: document.getElementById('cookieSettings').value,
+                    askDownloadLocation: document.getElementById('askDownloadLocation').checked
+                };
+
+                // Ayarları kaydet
+                await window.electronAPI.saveSettings(newSettings);
+                
+                // UI güncelle
+                hasUnsavedChanges = false;
+                document.getElementById('saveButton').style.background = 'var(--success-color)';
+                updateLastSaved();
+                showNotification('Ayarlar başarıyla kaydedildi', 'success');
+
+                // Tema değişikliğini hemen uygula
+                document.documentElement.classList.toggle('dark-mode', newSettings.darkMode);
+            } catch (error) {
+                console.error('Settings save error:', error);
+                showNotification('Ayarlar kaydedilirken hata oluştu', 'error');
+            }
+        }
+
+        // Go back
+        async function goBack() {
+            if (hasUnsavedChanges) {
+                if (confirm('Kaydedilmemiş değişiklikler var. Kaydetmek ister misiniz?')) {
+                    await saveAllSettings();
+                }
+            }
+            await window.electronAPI.closeWindow();
+        }
+
+        // Event listeners for buttons
+        document.getElementById('saveButton').addEventListener('click', saveAllSettings);
+        document.getElementById('backButton').addEventListener('click', goBack);
+        document.getElementById('clearBrowsingDataButton').addEventListener('click', clearBrowsingData);
+        document.getElementById('downloadLocationButton').addEventListener('click', chooseDownloadLocation);
+        document.getElementById('showUserAgentButton').addEventListener('click', showUserAgent);
+        document.getElementById('resetButton').addEventListener('click', resetAllSettings);
+
+        // Event listeners for settings changes
+        const settingsInputs = [
+            { id: 'darkModeToggle', prop: 'darkMode', type: 'checkbox' },
+            { id: 'defaultZoomLevel', prop: 'defaultZoom', type: 'number' },
+            { id: 'homeUrlInput', prop: 'homeUrl', type: 'text' },
+            { id: 'jsToggle', prop: 'jsEnabled', type: 'checkbox' },
+            { id: 'fontSize', prop: 'fontSize', type: 'select' },
+            { id: 'startupOption', prop: 'startupOption', type: 'select' },
+            { id: 'blockPopups', prop: 'blockPopups', type: 'checkbox' },
+            { id: 'cookieSettings', prop: 'cookieSettings', type: 'select' },
+            { id: 'askDownloadLocation', prop: 'askDownloadLocation', type: 'checkbox' }
+        ];
+
+        settingsInputs.forEach(input => {
+            const element = document.getElementById(input.id);
+            if (element) {
+                element.addEventListener('change', function() {
+                    let value;
+                    if (input.type === 'checkbox') {
+                        value = this.checked;
+                    } else if (input.type === 'number') {
+                        value = parseFloat(this.value) || 1.0;
+                    } else {
+                        value = this.value;
+                    }
+                    settings[input.prop] = value;
+                    markAsChanged();
+                });
+            }
+        });
+
+        // Add event listener for window close
+        window.addEventListener('beforeunload', function(e) {
+            if (hasUnsavedChanges) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+</html>

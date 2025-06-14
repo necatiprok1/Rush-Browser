@@ -1,656 +1,755 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-    <title>Rush Browser</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    <head>
+        <title>Rush Browser</title>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        />
+        <style>
+            @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
-        :root {
-            --primary-color: #ffffff;
-            --hover-color: rgba(255, 255, 255, 0.1);
-            --bg-color: #0a0a0f;
-            --text-color: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.7);
-            --surface-color: rgba(255, 255, 255, 0.05);
-            --border-color: rgba(255, 255, 255, 0.1);
-            --shadow-color: rgba(0, 0, 0, 0.2);
-            --glow-color: rgba(255, 255, 255, 0.03);
-        }
-
-        :root.light-mode {
-            --bg-color: #f8fafc;
-            --text-color: #1e293b;
-            --text-secondary: #64748b;
-            --surface-color: rgba(0, 0, 0, 0.05);
-            --border-color: rgba(0, 0, 0, 0.1);
-            --hover-color: rgba(0, 0, 0, 0.05);
-            --shadow-color: rgba(0, 0, 0, 0.1);
-            --glow-color: rgba(0, 0, 0, 0.02);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
-            opacity: 0.8;
-            transition: opacity 0.3s ease;
-        }
-
-        .search-container {
-            text-align: center;
-            padding: 40px;
-            max-width: 680px;
-            width: 100%;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .logo-container {
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .logo {
-            width: 180px;
-            height: auto;
-            filter: drop-shadow(0 4px 20px rgba(255, 255, 255, 0.1));
-            transition: transform 0.3s ease;
-        }
-
-        .logo:hover {
-            transform: translateY(-2px);
-        }
-
-        .search-box {
-            width: 100%;
-            position: relative;
-            margin-bottom: 30px;
-        }
-
-        .search-input-container {
-            position: relative;
-            width: 100%;
-            height: 56px;
-        }
-
-        .search-input {
-            width: 100%;
-            height: 100%;
-            padding: 0 60px;
-            font-size: 16px;
-            background: var(--surface-color);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            border-radius: 28px;
-            outline: none;
-            transition: all 0.3s ease;
-            font-family: inherit;
-        }
-
-        .search-input:focus {
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 0 0 2px var(--glow-color);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-            font-size: 18px;
-            pointer-events: none;
-            transition: color 0.3s ease;
-        }
-
-        .search-input:focus + .search-icon {
-            color: var(--text-color);
-        }
-
-        .quick-links {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 16px;
-            margin-top: 40px;
-            padding: 0 20px;
-        }
-
-        .quick-link {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            color: var(--text-color);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-
-        .quick-link:hover {
-            background: var(--hover-color);
-            border-color: rgba(255, 255, 255, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .quick-link i {
-            margin-right: 12px;
-            font-size: 18px;
-            color: var(--text-secondary);
-        }
-
-        .quick-link span {
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .header-controls {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            z-index: 1000;
-        }
-
-        .control-button {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .control-button:hover {
-            background: var(--hover-color);
-            border-color: var(--text-secondary);
-            transform: translateY(-2px);
-        }
-
-        .control-button i {
-            font-size: 18px;
-            transition: all 0.3s ease;
-        }
-
-        .profile-button {
-            width: auto;
-            min-width: 40px;
-            padding: 0 16px;
-            gap: 8px;
-            background: var(--surface-color);
-        }
-
-        .profile-button img {
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-
-        .dropdown-header {
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .dropdown-header img {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            object-fit: cover;
-        }
-
-        .profile-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .profile-info span {
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        .profile-info .text-secondary {
-            color: var(--text-secondary);
-            font-size: 12px;
-        }
-
-        #signedOutState {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        #signedOutState i {
-            font-size: 20px;
-        }
-
-        #signedOutState span {
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            margin-top: 8px;
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 8px;
-            min-width: 200px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px var(--shadow-color);
-            opacity: 0;
-            transform: translateY(-10px);
-            pointer-events: none;
-            transition: all 0.3s ease;
-        }
-
-        .dropdown-menu.show {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: all;
-        }
-
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 16px;
-            color: var(--text-color);
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            font-size: 14px;
-        }
-
-        .dropdown-item:hover {
-            background: var(--hover-color);
-        }
-
-        .dropdown-item i {
-            font-size: 16px;
-            color: var(--text-secondary);
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background: var(--border-color);
-            margin: 8px 0;
-        }
-
-        .version-badge {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background: #10b981;
-            color: white;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-weight: 600;
-        }
-
-        @keyframes rotate {
-            from {
-                transform: rotate(0deg);
+            :root {
+                --primary-color: #ffffff;
+                --hover-color: rgba(255, 255, 255, 0.1);
+                --bg-color: #0a0a0f;
+                --text-color: #ffffff;
+                --text-secondary: rgba(255, 255, 255, 0.7);
+                --surface-color: rgba(255, 255, 255, 0.05);
+                --border-color: rgba(255, 255, 255, 0.1);
+                --shadow-color: rgba(0, 0, 0, 0.2);
+                --glow-color: rgba(255, 255, 255, 0.03);
             }
-            to {
-                transform: rotate(360deg);
-            }
-        }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
+            :root.light-mode {
+                --bg-color: #f8fafc;
+                --text-color: #1e293b;
+                --text-secondary: #64748b;
+                --surface-color: rgba(0, 0, 0, 0.05);
+                --border-color: rgba(0, 0, 0, 0.1);
+                --hover-color: rgba(0, 0, 0, 0.05);
+                --shadow-color: rgba(0, 0, 0, 0.1);
+                --glow-color: rgba(0, 0, 0, 0.02);
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
 
-        @media (max-width: 640px) {
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                font-family:
+                    "Inter",
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    "Segoe UI",
+                    sans-serif;
+                background-color: var(--bg-color);
+                color: var(--text-color);
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                overflow: hidden;
+            }
+
+            body::before {
+                content: "";
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background:
+                    radial-gradient(
+                        circle at 20% 80%,
+                        rgba(255, 255, 255, 0.03) 0%,
+                        transparent 50%
+                    ),
+                    radial-gradient(
+                        circle at 80% 20%,
+                        rgba(255, 255, 255, 0.03) 0%,
+                        transparent 50%
+                    ),
+                    radial-gradient(
+                        circle at 40% 40%,
+                        rgba(255, 255, 255, 0.02) 0%,
+                        transparent 50%
+                    );
+                pointer-events: none;
+                z-index: -1;
+                opacity: 0.8;
+                transition: opacity 0.3s ease;
+            }
+
             .search-container {
-                padding: 20px;
+                text-align: center;
+                padding: 40px;
+                max-width: 680px;
+                width: 100%;
+                animation: fadeIn 0.5s ease-out;
             }
-            
+
+            .logo-container {
+                margin-bottom: 40px;
+                position: relative;
+            }
+
             .logo {
-                width: 140px;
+                width: 180px;
+                height: auto;
+                filter: drop-shadow(0 4px 20px rgba(255, 255, 255, 0.1));
+                transition: transform 0.3s ease;
+            }
+
+            .logo:hover {
+                transform: translateY(-2px);
+            }
+
+            .search-box {
+                width: 100%;
+                position: relative;
+                margin-bottom: 30px;
+            }
+
+            .search-input-container {
+                position: relative;
+                width: 100%;
+                height: 56px;
+            }
+
+            .search-input {
+                width: 100%;
+                height: 100%;
+                padding: 0 60px;
+                font-size: 16px;
+                background: var(--surface-color);
+                color: var(--text-color);
+                border: 1px solid var(--border-color);
+                border-radius: 28px;
+                outline: none;
+                transition: all 0.3s ease;
+                font-family: inherit;
+            }
+
+            .search-input:focus {
+                border-color: rgba(255, 255, 255, 0.2);
+                box-shadow: 0 0 0 2px var(--glow-color);
+            }
+
+            .search-icon {
+                position: absolute;
+                left: 20px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: var(--text-secondary);
+                font-size: 18px;
+                pointer-events: none;
+                transition: color 0.3s ease;
+            }
+
+            .search-input:focus + .search-icon {
+                color: var(--text-color);
             }
 
             .quick-links {
-                grid-template-columns: repeat(2, 1fr);
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 16px;
+                margin-top: 40px;
+                padding: 0 20px;
             }
-        }
-    </style>
-</head>
-<body>
-    <div class="header-controls">
-        <button class="control-button profile-button" onclick="toggleDropdown('profileMenu')" title="Google Account" id="profileButton">
-            <div id="signedOutState">
-                <i class="fas fa-user-circle"></i>
-                <span>Sign in</span>
-            </div>
-            <div id="signedInState" style="display: none;">
-                <img src="" alt="Profile" id="profileImage">
-                <span id="profileName"></span>
-            </div>
-        </button>
 
-        <button class="control-button theme-button" onclick="toggleTheme()" title="Toggle Theme">
-            <i class="fas fa-sun"></i>
-        </button>
+            .quick-link {
+                display: flex;
+                align-items: center;
+                padding: 12px 16px;
+                background: var(--surface-color);
+                border: 1px solid var(--border-color);
+                border-radius: 12px;
+                color: var(--text-color);
+                text-decoration: none;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+            }
 
-        <button class="control-button" onclick="toggleDropdown('settingsMenu')" title="Settings">
-            <i class="fas fa-cog"></i>
-        </button>
+            .quick-link:hover {
+                background: var(--hover-color);
+                border-color: rgba(255, 255, 255, 0.15);
+                transform: translateY(-2px);
+            }
 
-        <button class="control-button" onclick="toggleDropdown('moreMenu')" title="More">
-            <i class="fas fa-ellipsis-v"></i>
-            <span class="version-badge" id="updateBadge" style="display: none;">New</span>
-        </button>
+            .quick-link i {
+                margin-right: 12px;
+                font-size: 18px;
+                color: var(--text-secondary);
+            }
 
-        <button class="control-button" onclick="showFeedback()" title="Send Feedback">
-            <i class="fas fa-comment-alt"></i>
-        </button>
+            .quick-link span {
+                font-size: 14px;
+                font-weight: 500;
+            }
 
-        <!-- Profile Dropdown Menu -->
-        <div class="dropdown-menu" id="profileMenu">
-            <!-- Signed Out State -->
-            <div id="signedOutMenu">
-                <a href="#" class="dropdown-item" onclick="signInWithGoogle()">
-                    <i class="fab fa-google"></i>
-                    Sign in with Google
-                </a>
-            </div>
-            <!-- Signed In State -->
-            <div id="signedInMenu" style="display: none;">
-                <div class="dropdown-header">
-                    <img src="" alt="Profile" id="profileImageLarge">
-                    <div class="profile-info">
-                        <span id="profileFullName"></span>
-                        <span id="profileEmail" class="text-secondary"></span>
-                    </div>
-                </div>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item" onclick="manageAccount()">
+            .header-controls {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                z-index: 1000;
+            }
+
+            .control-button {
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: var(--surface-color);
+                border: 1px solid var(--border-color);
+                border-radius: 12px;
+                color: var(--text-secondary);
+                cursor: pointer;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .control-button:hover {
+                background: var(--hover-color);
+                border-color: var(--text-secondary);
+                transform: translateY(-2px);
+            }
+
+            .control-button i {
+                font-size: 18px;
+                transition: all 0.3s ease;
+            }
+
+            .profile-button {
+                width: auto;
+                min-width: 40px;
+                padding: 0 16px;
+                gap: 8px;
+                background: var(--surface-color);
+            }
+
+            .profile-button img {
+                width: 28px;
+                height: 28px;
+                border-radius: 8px;
+                object-fit: cover;
+            }
+
+            .dropdown-header {
+                padding: 16px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .dropdown-header img {
+                width: 48px;
+                height: 48px;
+                border-radius: 12px;
+                object-fit: cover;
+            }
+
+            .profile-info {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .profile-info span {
+                font-size: 14px;
+                line-height: 1.4;
+            }
+
+            .profile-info .text-secondary {
+                color: var(--text-secondary);
+                font-size: 12px;
+            }
+
+            #signedOutState {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            #signedOutState i {
+                font-size: 20px;
+            }
+
+            #signedOutState span {
+                font-size: 14px;
+                font-weight: 500;
+            }
+
+            .dropdown-menu {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                margin-top: 8px;
+                background: var(--surface-color);
+                border: 1px solid var(--border-color);
+                border-radius: 12px;
+                padding: 8px;
+                min-width: 200px;
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                box-shadow: 0 4px 20px var(--shadow-color);
+                opacity: 0;
+                transform: translateY(-10px);
+                pointer-events: none;
+                transition: all 0.3s ease;
+            }
+
+            .dropdown-menu.show {
+                opacity: 1;
+                transform: translateY(0);
+                pointer-events: all;
+            }
+
+            .dropdown-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 16px;
+                color: var(--text-color);
+                text-decoration: none;
+                border-radius: 8px;
+                transition: all 0.2s ease;
+                font-size: 14px;
+            }
+
+            .dropdown-item:hover {
+                background: var(--hover-color);
+            }
+
+            .dropdown-item i {
+                font-size: 16px;
+                color: var(--text-secondary);
+            }
+
+            .dropdown-divider {
+                height: 1px;
+                background: var(--border-color);
+                margin: 8px 0;
+            }
+
+            .version-badge {
+                position: absolute;
+                top: -6px;
+                right: -6px;
+                background: #10b981;
+                color: white;
+                font-size: 10px;
+                padding: 2px 6px;
+                border-radius: 10px;
+                font-weight: 600;
+            }
+
+            @keyframes rotate {
+                from {
+                    transform: rotate(0deg);
+                }
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @media (max-width: 640px) {
+                .search-container {
+                    padding: 20px;
+                }
+
+                .logo {
+                    width: 140px;
+                }
+
+                .quick-links {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header-controls">
+            <button
+                class="control-button profile-button"
+                onclick="toggleDropdown('profileMenu')"
+                title="Google Account"
+                id="profileButton"
+            >
+                <div id="signedOutState">
                     <i class="fas fa-user-circle"></i>
-                    Manage Account
+                    <span>Sign in</span>
+                </div>
+                <div id="signedInState" style="display: none">
+                    <img src="" alt="Profile" id="profileImage" />
+                    <span id="profileName"></span>
+                </div>
+            </button>
+
+            <button
+                class="control-button theme-button"
+                onclick="toggleDarkMode()"
+                title="Toggle Theme"
+            >
+                <i class="fas fa-sun"></i>
+            </button>
+
+            <button
+                class="control-button"
+                onclick="toggleDropdown('settingsMenu')"
+                title="Settings"
+            >
+                <i class="fas fa-cog"></i>
+            </button>
+
+            <button
+                class="control-button"
+                onclick="toggleDropdown('moreMenu')"
+                title="More"
+            >
+                <i class="fas fa-ellipsis-v"></i>
+                <span
+                    class="version-badge"
+                    id="updateBadge"
+                    style="display: none"
+                    >New</span
+                >
+            </button>
+
+            <button
+                class="control-button"
+                onclick="showFeedback()"
+                title="Send Feedback"
+            >
+                <i class="fas fa-comment-alt"></i>
+            </button>
+
+            <!-- Profile Dropdown Menu -->
+            <div class="dropdown-menu" id="profileMenu">
+                <!-- Signed Out State -->
+                <div id="signedOutMenu">
+                    <a
+                        href="#"
+                        class="dropdown-item"
+                        onclick="signInWithGoogle()"
+                    >
+                        <i class="fab fa-google"></i>
+                        Sign in with Google
+                    </a>
+                </div>
+                <!-- Signed In State -->
+                <div id="signedInMenu" style="display: none">
+                    <div class="dropdown-header">
+                        <img src="" alt="Profile" id="profileImageLarge" />
+                        <div class="profile-info">
+                            <span id="profileFullName"></span>
+                            <span
+                                id="profileEmail"
+                                class="text-secondary"
+                            ></span>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item" onclick="manageAccount()">
+                        <i class="fas fa-user-circle"></i>
+                        Manage Account
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item" onclick="signOut()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Sign Out
+                    </a>
+                </div>
+            </div>
+
+            <!-- Settings Dropdown Menu -->
+            <div class="dropdown-menu" id="settingsMenu">
+                <a
+                    href="#"
+                    class="dropdown-item"
+                    onclick="openSettings('general')"
+                >
+                    <i class="fas fa-cog"></i>
+                    General Settings
+                </a>
+                <a
+                    href="#"
+                    class="dropdown-item"
+                    onclick="openSettings('appearance')"
+                >
+                    <i class="fas fa-paint-brush"></i>
+                    Appearance
+                </a>
+                <a
+                    href="#"
+                    class="dropdown-item"
+                    onclick="openSettings('privacy')"
+                >
+                    <i class="fas fa-shield-alt"></i>
+                    Privacy & Security
+                </a>
+            </div>
+
+            <!-- More Dropdown Menu -->
+            <div class="dropdown-menu" id="moreMenu">
+                <a href="#" class="dropdown-item" onclick="showHistory()">
+                    <i class="fas fa-history"></i>
+                    History
+                </a>
+                <a href="#" class="dropdown-item" onclick="importBookmarks()">
+                    <i class="fas fa-bookmark"></i>
+                    Import Bookmarks
+                </a>
+                <a href="#" class="dropdown-item" onclick="clearCache()">
+                    <i class="fas fa-broom"></i>
+                    Clear Cache
+                </a>
+                <a href="#" class="dropdown-item" onclick="toggleDevTools()">
+                    <i class="fas fa-code"></i>
+                    Developer Tools
                 </a>
                 <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item" onclick="signOut()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Sign Out
+                <a href="#" class="dropdown-item" onclick="checkForUpdates()">
+                    <i class="fas fa-sync"></i>
+                    Check for Updates
+                </a>
+                <a href="#" class="dropdown-item" onclick="getHelp()">
+                    <i class="fas fa-question-circle"></i>
+                    Help & Support
+                </a>
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-item">
+                    <i class="fas fa-info-circle"></i>
+                    Version 1.0.0
+                </div>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <div class="logo-container">
+                <img
+                    src="https://i.imghippo.com/files/AS2968KbU.png"
+                    alt="Rush Browser"
+                    class="logo"
+                />
+            </div>
+
+            <div class="search-box">
+                <div class="search-input-container">
+                    <input
+                        type="text"
+                        class="search-input"
+                        placeholder="Search the web"
+                        autofocus
+                    />
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+            </div>
+
+            <div class="quick-links">
+                <a href="https://github.com" class="quick-link">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub</span>
+                </a>
+                <a href="https://youtube.com" class="quick-link">
+                    <i class="fab fa-youtube"></i>
+                    <span>YouTube</span>
+                </a>
+                <a href="https://twitter.com" class="quick-link">
+                    <i class="fab fa-twitter"></i>
+                    <span>Twitter</span>
+                </a>
+                <a href="https://linkedin.com" class="quick-link">
+                    <i class="fab fa-linkedin"></i>
+                    <span>LinkedIn</span>
                 </a>
             </div>
         </div>
 
-        <!-- Settings Dropdown Menu -->
-        <div class="dropdown-menu" id="settingsMenu">
-            <a href="#" class="dropdown-item" onclick="openSettings('general')">
-                <i class="fas fa-cog"></i>
-                General Settings
-            </a>
-            <a href="#" class="dropdown-item" onclick="openSettings('appearance')">
-                <i class="fas fa-paint-brush"></i>
-                Appearance
-            </a>
-            <a href="#" class="dropdown-item" onclick="openSettings('privacy')">
-                <i class="fas fa-shield-alt"></i>
-                Privacy & Security
-            </a>
-        </div>
+        <script>
+            // Theme management
+            let isLightMode = false;
 
-        <!-- More Dropdown Menu -->
-        <div class="dropdown-menu" id="moreMenu">
-            <a href="#" class="dropdown-item" onclick="showHistory()">
-                <i class="fas fa-history"></i>
-                History
-            </a>
-            <a href="#" class="dropdown-item" onclick="importBookmarks()">
-                <i class="fas fa-bookmark"></i>
-                Import Bookmarks
-            </a>
-            <a href="#" class="dropdown-item" onclick="clearCache()">
-                <i class="fas fa-broom"></i>
-                Clear Cache
-            </a>
-            <a href="#" class="dropdown-item" onclick="toggleDevTools()">
-                <i class="fas fa-code"></i>
-                Developer Tools
-            </a>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item" onclick="checkForUpdates()">
-                <i class="fas fa-sync"></i>
-                Check for Updates
-            </a>
-            <a href="#" class="dropdown-item" onclick="getHelp()">
-                <i class="fas fa-question-circle"></i>
-                Help & Support
-            </a>
-            <div class="dropdown-divider"></div>
-            <div class="dropdown-item">
-                <i class="fas fa-info-circle"></i>
-                Version 1.0.0
-            </div>
-        </div>
-    </div>
+            async function initializeTheme() {
+                // Başlangıçta dark mode'u aktif et
+                isLightMode = false;
+                await window.electronAPI.toggleDarkMode(true);
+                updateTheme();
+            }
 
-    <div class="search-container">
-        <div class="logo-container">
-            <img src="https://i.imghippo.com/files/AS2968KbU.png" alt="Rush Browser" class="logo">
-        </div>
-        
-        <div class="search-box">
-            <div class="search-input-container">
-                <input type="text" class="search-input" placeholder="Search the web" autofocus>
-                <i class="fas fa-search search-icon"></i>
-            </div>
-        </div>
-
-        <div class="quick-links">
-            <a href="https://github.com" class="quick-link">
-                <i class="fab fa-github"></i>
-                <span>GitHub</span>
-            </a>
-            <a href="https://youtube.com" class="quick-link">
-                <i class="fab fa-youtube"></i>
-                <span>YouTube</span>
-            </a>
-            <a href="https://twitter.com" class="quick-link">
-                <i class="fab fa-twitter"></i>
-                <span>Twitter</span>
-            </a>
-            <a href="https://linkedin.com" class="quick-link">
-                <i class="fab fa-linkedin"></i>
-                <span>LinkedIn</span>
-            </a>
-        </div>
-    </div>
-
-    <script>
-        // Theme management
-        const themeKey = 'rush-browser-theme';
-        let isLightMode = localStorage.getItem(themeKey) === 'light';
-
-        async function toggleTheme() {
-            isLightMode = !isLightMode;
-            localStorage.setItem(themeKey, isLightMode ? 'light' : 'dark');
-            updateTheme();
-            try {
-                // Ana sürece tema değişikliğini bildir
+            async function toggleDarkMode() {
+                isLightMode = !isLightMode;
                 await window.electronAPI.toggleDarkMode(!isLightMode);
-            } catch (error) {
-                console.error('Tema değişikliği iletilemedi:', error);
+                updateTheme();
             }
-        }
 
-        function updateTheme() {
-            document.documentElement.classList.toggle('light-mode', isLightMode);
-            const themeButton = document.querySelector('.theme-button i');
-            if (themeButton) {
-                themeButton.className = isLightMode ? 'fas fa-moon' : 'fas fa-sun';
-            }
-            
-            // Logo rengini temaya göre güncelle
-            const logo = document.querySelector('.logo');
-            if (logo) {
+            // Tema değişikliklerini dinle
+            window.electronAPI.onThemeChange((isDarkMode) => {
+                isLightMode = !isDarkMode;
+                updateTheme();
+            });
+
+            function updateTheme() {
+                document.documentElement.classList.toggle(
+                    "light-mode",
+                    isLightMode,
+                );
+
+                const themeButton = document.querySelector(".theme-button");
+                const icon = themeButton.querySelector("i");
+
                 if (isLightMode) {
-                    // Light Theme - Logo siyah olacak
-                    logo.style.filter = 'brightness(0)';
+                    icon.className = "fas fa-sun";
+                    themeButton.title = "Switch to Dark Mode";
                 } else {
-                    // Dark Theme - Logo beyaz olacak
-                    logo.style.filter = 'brightness(0) invert(1)';
+                    icon.className = "fas fa-moon";
+                    themeButton.title = "Switch to Light Mode";
+                }
+
+                // Logo rengini temaya göre güncelle
+                const logo = document.querySelector(".logo");
+                if (logo) {
+                    if (isLightMode) {
+                        // Light Theme - Logo siyah olacak
+                        logo.style.filter = "brightness(0)";
+                    } else {
+                        // Dark Theme - Logo beyaz olacak
+                        logo.style.filter = "brightness(0) invert(1)";
+                    }
                 }
             }
-        }
 
-        // Dropdown menus
-        let activeDropdown = null;
+            // Dropdown menus
+            let activeDropdown = null;
 
-        function toggleDropdown(menuId) {
-            const menu = document.getElementById(menuId);
-            
-            // Close any open dropdown
-            if (activeDropdown && activeDropdown !== menu) {
-                activeDropdown.classList.remove('show');
-            }
-            
-            menu.classList.toggle('show');
-            activeDropdown = menu.classList.contains('show') ? menu : null;
-        }
+            function toggleDropdown(menuId) {
+                const menu = document.getElementById(menuId);
 
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', (e) => {
-            if (activeDropdown && !e.target.closest('.control-button') && !e.target.closest('.dropdown-menu')) {
-                activeDropdown.classList.remove('show');
-                activeDropdown = null;
-            }
-        });
-
-        // Google Auth
-        window.onload = async function() {
-            updateTheme();
-            await initializeGoogleAuth();
-            checkForUpdates();
-        };
-
-        async function initializeGoogleAuth() {
-            try {
-                const userInfo = await window.electronAPI.getGoogleUserInfo();
-                if (userInfo) {
-                    document.getElementById('profileImage').src = userInfo.picture;
-                    document.getElementById('profileName').textContent = userInfo.name.split(' ')[0];
+                // Close any open dropdown
+                if (activeDropdown && activeDropdown !== menu) {
+                    activeDropdown.classList.remove("show");
                 }
-            } catch (error) {
-                console.error('Failed to get Google user info:', error);
+
+                menu.classList.toggle("show");
+                activeDropdown = menu.classList.contains("show") ? menu : null;
             }
-        }
 
-        // Functions for menu items
-        function showHistory() {
-            window.electronAPI.showHistory();
-        }
+            // Close dropdowns when clicking outside
+            document.addEventListener("click", (e) => {
+                if (
+                    activeDropdown &&
+                    !e.target.closest(".control-button") &&
+                    !e.target.closest(".dropdown-menu")
+                ) {
+                    activeDropdown.classList.remove("show");
+                    activeDropdown = null;
+                }
+            });
 
-        function importBookmarks() {
-            window.electronAPI.importBookmarks();
-        }
+            // Google Auth
+            window.onload = async function () {
+                updateTheme();
+                await initializeGoogleAuth();
+                checkForUpdates();
+            };
 
-        function clearCache() {
-            window.electronAPI.clearCache();
-        }
-
-        function toggleDevTools() {
-            window.electronAPI.toggleDevTools();
-        }
-
-        function openSettings(section) {
-            window.electronAPI.openSettingsTab(section || 'general');
-        }
-
-        function manageAccount() {
-            window.electronAPI.openUrl('https://myaccount.google.com');
-        }
-
-        function signOut() {
-            window.electronAPI.signOut();
-        }
-
-        function showFeedback() {
-            window.electronAPI.showFeedback();
-        }
-
-        async function checkForUpdates() {
-            const hasUpdate = await window.electronAPI.checkForUpdates();
-            const badge = document.getElementById('updateBadge');
-            badge.style.display = hasUpdate ? 'block' : 'none';
-        }
-
-        function getHelp() {
-            window.electronAPI.openUrl('https://support.rushbrowser.com');
-        }
-
-        document.querySelector('.search-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const query = this.value.trim();
-                if (query) {
-                    window.location.href = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+            async function initializeGoogleAuth() {
+                try {
+                    const userInfo =
+                        await window.electronAPI.getGoogleUserInfo();
+                    if (userInfo) {
+                        document.getElementById("profileImage").src =
+                            userInfo.picture;
+                        document.getElementById("profileName").textContent =
+                            userInfo.name.split(" ")[0];
+                    }
+                } catch (error) {
+                    console.error("Failed to get Google user info:", error);
                 }
             }
-        });
 
-        // Initialize theme on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            updateTheme();
-        });
-    </script>
-</body>
+            // Functions for menu items
+            function showHistory() {
+                window.electronAPI.showHistory();
+            }
+
+            function importBookmarks() {
+                window.electronAPI.importBookmarks();
+            }
+
+            function clearCache() {
+                window.electronAPI.clearCache();
+            }
+
+            function toggleDevTools() {
+                window.electronAPI.toggleDevTools();
+            }
+
+            function openSettings(section) {
+                window.electronAPI.openSettingsTab(section || "general");
+            }
+
+            function manageAccount() {
+                window.electronAPI.openUrl("https://myaccount.google.com");
+            }
+
+            function signOut() {
+                window.electronAPI.signOut();
+            }
+
+            function showFeedback() {
+                window.electronAPI.showFeedback();
+            }
+
+            async function checkForUpdates() {
+                const hasUpdate = await window.electronAPI.checkForUpdates();
+                const badge = document.getElementById("updateBadge");
+                badge.style.display = hasUpdate ? "block" : "none";
+            }
+
+            function getHelp() {
+                window.electronAPI.openUrl("https://support.rushbrowser.com");
+            }
+
+            document
+                .querySelector(".search-input")
+                .addEventListener("keypress", function (e) {
+                    if (e.key === "Enter") {
+                        const query = this.value.trim();
+                        if (query) {
+                            window.location.href = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+                        }
+                    }
+                });
+
+            // Initialize theme on page load
+            window.addEventListener("DOMContentLoaded", () => {
+                initializeTheme();
+            });
+        </script>
+    </body>
 </html>

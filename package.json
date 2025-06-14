@@ -11,7 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "@electron/remote": "^2.1.2",
-    "electron-reload": "^2.0.0-alpha.1"
+    "electron-reload": "^2.0.0-alpha.1",
+    "electron-store": "^10.0.1",
+    "keytar": "^7.9.0"
   },
   "devDependencies": {
     "electron": "^36.4.0",

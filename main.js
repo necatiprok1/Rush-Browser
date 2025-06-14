@@ -1,6 +1,19 @@
 const { app, BrowserWindow, BrowserView, ipcMain, Menu, shell, session, dialog } = require('electron');
 const path = require('path');
-// @electron/remote kaldırıldı
+// ESM ve CommonJS uyumlu import
+let Store;
+try {
+    Store = (require('electron-store')).default;
+} catch {
+    Store = require('electron-store');
+}
+const store = new Store({
+    name: 'browser-settings',
+    defaults: {
+        theme: 'dark',
+        'user-info': null
+    }
+});
 
 // Event listener sınırını artır
 require('events').EventEmitter.defaultMaxListeners = 20;
@@ -42,7 +55,7 @@ function updateViewBounds() {
 
 // Ayarlar ve yer imleri için veri saklama
 let settings = {
-  homeUrl: 'https://www.google.com',
+  homeUrl: 'file://' + path.join(__dirname, 'search.html'),
   defaultZoom: 1.0,
   jsEnabled: true,
   darkMode: false,
@@ -70,6 +83,8 @@ function createWindow() {
       webSecurity: true,
       preload: path.join(__dirname, 'preload.js')
     },
+    // Başlangıç temasını ayarla
+    backgroundColor: settings.darkMode ? '#0a0a0f' : '#ffffff',
     frame: true,
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
     backgroundColor: '#ffffff',
@@ -134,6 +149,99 @@ function createSettingsWindow() {
   }
 
   return settingsWindow;
+}
+
+// Google OAuth için yardımcı fonksiyonlar
+async function getAuthTokens() {
+    try {
+        const tokens = await keytar.getPassword('rush-browser', 'google-oauth');
+        return tokens ? JSON.parse(tokens) : null;
+    } catch (error) {
+        console.error('Token alınamadı:', error);
+        return null;
+    }
+}
+
+async function saveAuthTokens(tokens) {
+    try {
+        await keytar.setPassword('rush-browser', 'google-oauth', JSON.stringify(tokens));
+    } catch (error) {
+        console.error('Token kaydedilemedi:', error);
+    }
+}
+
+async function clearAuthTokens() {
+    try {
+        await keytar.deletePassword('rush-browser', 'google-oauth');
+        store.delete('user-info');
+    } catch (error) {
+        console.error('Token silinemedi:', error);
+    }
+}
+
+// Google ile giriş işlemi
+async function signInWithGoogle() {
+    const authUrl = oauth2Client.generateAuthUrl({
+        access_type: 'offline',
+        scope: [
+            'https://www.googleapis.com/auth/userinfo.profile',
+            'https://www.googleapis.com/auth/userinfo.email'
+        ]
+    });
+
+    const authWindow = new BrowserWindow({
+        width: 600,
+        height: 800,
+        webPreferences: {
+            nodeIntegration: false,
+            contextIsolation: true
+        }
+    });
+
+    authWindow.loadURL(authUrl);
+
+    return new Promise((resolve, reject) => {
+        authWindow.webContents.on('will-navigate', async (event, url) => {
+            try {
+                if (url.startsWith(GOOGLE_REDIRECT_URI)) {
+                    const urlObj = new URL(url);
+                    const code = urlObj.searchParams.get('code');
+                    const { tokens } = await oauth2Client.getToken(code);
+                    
+                    await saveAuthTokens(tokens);
+                    oauth2Client.setCredentials(tokens);
+
+                    // Kullanıcı bilgilerini al
+                    const oauth2 = google.oauth2({ version: 'v2', auth: oauth2Client });
+                    const { data } = await oauth2.userinfo.get();
+                    
+                    // Kullanıcı bilgilerini kaydet
+                    store.set('user-info', {
+                        id: data.id,
+                        email: data.email,
+                        name: data.name,
+                        picture: data.picture
+                    });
+
+                    authWindow.close();
+                    resolve(data);
+                }
+            } catch (error) {
+                authWindow.close();
+                reject(error);
+            }
+        });
+
+        authWindow.on('closed', () => {
+            reject(new Error('Kimlik doğrulama penceresi kapatıldı'));
+        });
+    });
+}
+
+// Kullanıcı oturumunu kapat
+async function signOut() {
+    await clearAuthTokens();
+    oauth2Client.revokeCredentials();
 }
 
 // IPC işleyicileri
@@ -400,7 +508,12 @@ ipcMain.handle('close-window', (event) => {
   return false;
 });
 
-// Sekme yönetimi için IPC işleyicileri
+// IPC event handlers
+ipcMain.handle('open-settings-tab', (event, section) => {
+  return openSettings(section);
+});
+
+// Tab event handlers
 ipcMain.handle('new-tab', (event, url) => {
   const viewId = createTab(url);
   switchTab(viewId);
@@ -439,33 +552,43 @@ function updateUrlInView(url) {
 }
 
 // Yeni sekme oluşturma fonksiyonu
-function createTab(url = 'https://www.google.com') {
+function createTab(url = null, options = {}) {
   const viewId = nextViewId++;
+  
+  // BrowserView oluştur
   const view = new BrowserView({
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       enableRemoteModule: false,
-      webSecurity: true,
-      allowRunningInsecureContent: false,
-      experimentalFeatures: false,
-      sandbox: true
+      preload: path.join(__dirname, 'preload.js')
     }
   });
-  
-  // BrowserView'ı düzgün konumlandır
-  view.setBackgroundColor('#ffffff');
-  view.setAutoResize({ width: true, height: true });
-  
-  // View'ı sakla
+
+  // Özel sekme başlığı varsa onu kullan
+  if (options.title) {
+    view.webContents.on('did-start-loading', () => {
+      mainWindow.webContents.send('tab-title-updated', { id: viewId, title: options.title });
+    });
+  }
+
+  mainWindow.addBrowserView(view);
   views.set(viewId, view);
 
-  // Olayları ayarla
-  setupViewEvents(view, viewId);
+  // Varsayılan URL'yi yükle
+  const loadUrl = url || settings.homeUrl;
+  view.webContents.loadURL(loadUrl);
 
-  // URL'i yükle
-  view.webContents.loadURL(url);
+  return viewId;
+}
 
+// Ayarları yeni sekmede aç
+function openSettings(section = 'general') {
+  const settingsUrl = `file://${path.join(__dirname, 'settings.html')}#${section}`;
+  const viewId = createTab(settingsUrl, { 
+    title: 'Rush:GeneralSettings'  // Özel sekme başlığı
+  });
+  switchTab(viewId);
   return viewId;
 }
 
@@ -569,7 +692,7 @@ function closeTab(viewId) {
 
   // Eğer son sekme kapatıldıysa, yeni bir sekme aç
   if (views.size === 0) {
-    const newViewId = createTab();
+    const newViewId = createTab(settings.homeUrl);
     switchTab(newViewId);
   }
 
@@ -598,8 +721,8 @@ function createMenu() {
           label: 'New Tab',
           accelerator: 'CmdOrCtrl+T',
           click: () => {
-            // Yeni sekme oluştur
-            const newTabId = createTab();
+            // Yeni sekme oluştur ve settings.homeUrl'i kullan
+            const newTabId = createTab(settings.homeUrl);
             switchTab(newTabId);
           }
         },
@@ -827,3 +950,66 @@ process.on('unhandledRejection', (reason, promise) => {
   
   // You could also save rejection logs to a file here
 });
+
+// IPC işleyicileri ekle
+ipcMain.handle('google-sign-in', async () => {
+    try {
+        const result = await signInWithGoogle();
+        return { success: true, data: result };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+});
+
+ipcMain.handle('google-sign-out', async () => {
+    try {
+        await signOut();
+        return { success: true };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+});
+
+ipcMain.handle('get-google-user-info', () => {
+    return store.get('user-info');
+});
+
+// Uygulama başlatılırken mevcut token'ları kontrol et
+app.whenReady().then(async () => {
+    const tokens = await getAuthTokens();
+    if (tokens) {
+        oauth2Client.setCredentials(tokens);
+    }
+});
+
+// Tema yönetimi için fonksiyonlar
+function updateBrowserTheme(isDarkMode) {
+  if (mainWindow) {
+    // Ana pencere temasını güncelle
+    mainWindow.webContents.send('theme-changed', isDarkMode);
+  }
+
+  // Tüm sekmelerin temasını güncelle
+  views.forEach((view, viewId) => {
+    view.webContents.send('theme-changed', isDarkMode);
+  });
+}
+
+// Tema değişikliği isteğini işle
+ipcMain.handle('toggle-dark-mode', async (event, isDarkMode) => {
+  settings.darkMode = isDarkMode;
+  updateBrowserTheme(isDarkMode);
+  return isDarkMode;
+});
+
+// Tema durumunu sorgula
+ipcMain.handle('is-dark-mode', () => {
+  return settings.darkMode;
+});
+
+// BrowserWindow oluşturulduğunda tema ayarını uygula
+function applyInitialTheme(window) {
+  if (settings.darkMode) {
+    updateBrowserTheme(true);
+  }
+}

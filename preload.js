@@ -19,6 +19,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Tema yönetimi
   toggleDarkMode: (enabled) => ipcRenderer.invoke('toggle-dark-mode', enabled),
   isDarkMode: () => ipcRenderer.invoke('is-dark-mode'),
+  onThemeChange: (callback) => {
+    ipcRenderer.on('theme-changed', (_, isDarkMode) => callback(isDarkMode));
+  },
   
   // Sekme yönetimi
   newTab: (url) => ipcRenderer.invoke('new-tab', url),
@@ -44,5 +47,16 @@ contextBridge.exposeInMainWorld('electronAPI', {
     return () => ipcRenderer.removeListener('url-update', handler);
   },
   onTabUpdate: (callback) => ipcRenderer.on('tab-update', (_, tab) => callback(tab)),
-  onTabClosed: (callback) => ipcRenderer.on('tab-closed', (_, tabId) => callback(tabId))
+  onTabClosed: (callback) => ipcRenderer.on('tab-closed', (_, tabId) => callback(tabId)),
+  onTabTitleUpdated: (callback) => ipcRenderer.on('tab-title-updated', (_, data) => callback(data)),
+
+  // Ayarlar için özel metod
+  openSettingsTab: (section) => ipcRenderer.invoke('open-settings-tab', section),
+
+  // Diğer işlevler buraya eklenebilir
+  googleSignOut: () => ipcRenderer.invoke('google-sign-out'),
+  getGoogleUserInfo: () => ipcRenderer.invoke('get-google-user-info'),
+  
+  // URL açma
+  openUrl: (url) => ipcRenderer.invoke('open-url', url)
 });

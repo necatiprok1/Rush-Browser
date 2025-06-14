@@ -1,62 +1,82 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer } = require("electron");
 
 // Ana süreç ile güvenli iletişim için API'yi tanımlama
-contextBridge.exposeInMainWorld('electronAPI', {
+contextBridge.exposeInMainWorld("electronAPI", {
   // Navigasyon
-  navigateTo: (url) => ipcRenderer.invoke('navigate-to', url),
-  goBack: () => ipcRenderer.invoke('go-back'),
-  goForward: () => ipcRenderer.invoke('go-forward'),
-  refresh: () => ipcRenderer.invoke('refresh'),
-  goHome: () => ipcRenderer.invoke('go-home'),
-  
+  navigateTo: (url) => ipcRenderer.invoke("navigate-to", url),
+  goBack: () => ipcRenderer.invoke("go-back"),
+  goForward: () => ipcRenderer.invoke("go-forward"),
+  refresh: () => ipcRenderer.invoke("refresh"),
+  goHome: () => ipcRenderer.invoke("go-home"),
+
   // Zoom kontrolü
-  getZoomFactor: () => ipcRenderer.invoke('get-zoom-factor'),
-  setZoomFactor: (factor) => ipcRenderer.invoke('set-zoom-factor', factor),
-  zoomIn: () => ipcRenderer.invoke('zoom-in'),
-  zoomOut: () => ipcRenderer.invoke('zoom-out'),
-  onZoomChange: (callback) => ipcRenderer.on('zoom-change', (_, factor) => callback(factor)),
-  
+  getZoomFactor: () => ipcRenderer.invoke("get-zoom-factor"),
+  setZoomFactor: (factor) => ipcRenderer.invoke("set-zoom-factor", factor),
+  zoomIn: () => ipcRenderer.invoke("zoom-in"),
+  zoomOut: () => ipcRenderer.invoke("zoom-out"),
+  onZoomChange: (callback) =>
+    ipcRenderer.on("zoom-change", (_, factor) => callback(factor)),
+
   // Tema yönetimi
-  toggleDarkMode: (enabled) => ipcRenderer.invoke('toggle-dark-mode', enabled),
-  isDarkMode: () => ipcRenderer.invoke('is-dark-mode'),
+  toggleDarkMode: (enabled) => ipcRenderer.invoke("toggle-dark-mode", enabled),
+  isDarkMode: () => ipcRenderer.invoke("is-dark-mode"),
   onThemeChange: (callback) => {
-    ipcRenderer.on('theme-changed', (_, isDarkMode) => callback(isDarkMode));
+    ipcRenderer.on("theme-changed", (_, isDarkMode) => callback(isDarkMode));
   },
-  
+
   // Sekme yönetimi
-  newTab: (url) => ipcRenderer.invoke('new-tab', url),
-  switchTab: (viewId) => ipcRenderer.invoke('switch-tab', viewId),
-  closeTab: (viewId) => ipcRenderer.invoke('close-tab', viewId),
-  getCurrentUrl: () => ipcRenderer.invoke('get-current-url'),
-  getCurrentTitle: () => ipcRenderer.invoke('get-current-title'),
-  
+  newTab: (url) => ipcRenderer.invoke("new-tab", url),
+  switchTab: (viewId) => ipcRenderer.invoke("switch-tab", viewId),
+  closeTab: (viewId) => ipcRenderer.invoke("close-tab", viewId),
+  getCurrentUrl: () => ipcRenderer.invoke("get-current-url"),
+  getCurrentTitle: () => ipcRenderer.invoke("get-current-title"),
+
   // Ayarlar
-  openSettings: () => ipcRenderer.invoke('open-settings'),
-  closeWindow: () => ipcRenderer.invoke('close-window'),
-  
+  openSettings: () => ipcRenderer.invoke("open-settings"),
+  closeWindow: () => ipcRenderer.invoke("close-window"),
+
   // Yer imleri
-  getBookmarks: () => ipcRenderer.invoke('get-bookmarks'),
-  addBookmark: (bookmark) => ipcRenderer.invoke('add-bookmark', bookmark),
-  removeBookmark: (url) => ipcRenderer.invoke('remove-bookmark', url),
-  isBookmarked: (url) => ipcRenderer.invoke('is-bookmarked', url),
-  
+  getBookmarks: () => ipcRenderer.invoke("get-bookmarks"),
+  addBookmark: (bookmark) => ipcRenderer.invoke("add-bookmark", bookmark),
+  removeBookmark: (url) => ipcRenderer.invoke("remove-bookmark", url),
+  isBookmarked: (url) => ipcRenderer.invoke("is-bookmarked", url),
+
   // Olay dinleyicileri
   onUrlUpdate: (callback) => {
     const handler = (_, url) => callback(url);
-    ipcRenderer.on('url-update', handler);
-    return () => ipcRenderer.removeListener('url-update', handler);
+    ipcRenderer.on("url-update", handler);
+    return () => ipcRenderer.removeListener("url-update", handler);
   },
-  onTabUpdate: (callback) => ipcRenderer.on('tab-update', (_, tab) => callback(tab)),
-  onTabClosed: (callback) => ipcRenderer.on('tab-closed', (_, tabId) => callback(tabId)),
-  onTabTitleUpdated: (callback) => ipcRenderer.on('tab-title-updated', (_, data) => callback(data)),
+  onLoadingStarted: (callback) => {
+    const handler = () => callback();
+    ipcRenderer.on("loading-started", handler);
+    return () => ipcRenderer.removeListener("loading-started", handler);
+  },
+  onLoadingStopped: (callback) => {
+    const handler = () => callback();
+    ipcRenderer.on("loading-stopped", handler);
+    return () => ipcRenderer.removeListener("loading-stopped", handler);
+  },
+  onTitleUpdate: (callback) => {
+    const handler = (_, data) => callback(data);
+    ipcRenderer.on("title-update", handler);
+    return () => ipcRenderer.removeListener("title-update", handler);
+  },
+  onTabUpdate: (callback) =>
+    ipcRenderer.on("tab-update", (_, tab) => callback(tab)),
+  onTabClosed: (callback) =>
+    ipcRenderer.on("tab-closed", (_, tabId) => callback(tabId)),
+  onTabTitleUpdated: (callback) =>
+    ipcRenderer.on("tab-title-updated", (_, data) => callback(data)),
 
   // Ayarlar için özel metod
-  openSettingsTab: (section) => ipcRenderer.invoke('open-settings-tab', section),
+  openSettingsTab: (section) =>
+    ipcRenderer.invoke("open-settings-tab", section),
 
   // Diğer işlevler buraya eklenebilir
-  googleSignOut: () => ipcRenderer.invoke('google-sign-out'),
-  getGoogleUserInfo: () => ipcRenderer.invoke('get-google-user-info'),
-  
+  googleSignOut: () => ipcRenderer.invoke("google-sign-out"),
+  getGoogleUserInfo: () => ipcRenderer.invoke("get-google-user-info"),
+
   // URL açma
-  openUrl: (url) => ipcRenderer.invoke('open-url', url)
+  openUrl: (url) => ipcRenderer.invoke("open-url", url),
 });

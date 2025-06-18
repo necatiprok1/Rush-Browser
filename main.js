@@ -121,6 +121,11 @@ const searchEngines = {
     name: "Yahoo",
     searchUrl: "https://search.yahoo.com/search?p=",
     suggestUrl: "https://search.yahoo.com/sugg/chrome?output=fxjson&command="
+  },
+  brave: {
+    name: "Brave Search",
+    searchUrl: "https://search.brave.com/search?q=",
+    suggestUrl: "https://search.brave.com/api/suggest?q="
   }
 };
 
@@ -1038,7 +1043,8 @@ ipcMain.handle("perform-overlay-search", async (event, query) => {
       google: "https://www.google.com/search?q=",
       bing: "https://www.bing.com/search?q=",
       duckduckgo: "https://duckduckgo.com/?q=",
-      yahoo: "https://search.yahoo.com/search?p="
+      yahoo: "https://search.yahoo.com/search?p=",
+      brave: "https://search.brave.com/search?q="
     };
 
     const searchUrl = searchEngines[searchEngine] + encodeURIComponent(query.trim());

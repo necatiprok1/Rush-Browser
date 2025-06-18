@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Search Overlay</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #ffffff;
+            --bg-color: #0a0a0f;
+            --surface-color: #161620;
+            --text-color: #ffffff;
+            --text-secondary: #a0a0b0;
+            --border-color: #2a2a3a;
+            --glass-bg: rgba(22, 22, 32, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow-primary: 0 8px 32px rgba(255, 255, 255, 0.1);
+            --border-radius: 12px;
+            --transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            --hover-color: rgba(255, 255, 255, 0.1);
+        }
+
+        :root.light-mode {
+            --primary-color: #1a1a1a;
+            --bg-color: #f8f9fa;
+            --surface-color: #ffffff;
+            --text-color: #1a1a1a;
+            --text-secondary: #666666;
+            --border-color: #e0e0e0;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --shadow-primary: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --hover-color: rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: transparent;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: default;
+        }.search-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            pointer-events: auto;
+        }
+
+        .search-box {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-primary);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .search-input-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1.5rem 4rem 1.5rem 2rem;
+            font-size: 1.125rem;
+            color: var(--text-color);
+            background: transparent;
+            border: none;
+            outline: none;
+            font-family: inherit;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            opacity: 0.6;
+            transition: var(--transition);
+            pointer-events: none;
+        }
+
+        .search-input:focus + .search-icon {
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        /* Search Suggestions */
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-top: none;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            box-shadow: var(--shadow-primary);
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .search-suggestions.show {
+            display: block;
+        }
+
+        .suggestions-section {
+            padding: 0.5rem 0;
+        }        .suggestion-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-color);
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.95rem;
+            position: relative;
+            border-radius: 8px;
+            margin: 0.125rem 0;
+        }
+
+        .suggestion-item:hover,
+        .suggestion-item.highlighted,
+        .suggestion-item.active {
+            background: var(--hover-color);
+            transform: translateY(-1px);
+        }
+
+        .suggestion-item.active {
+            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+        }
+
+        .suggestion-icon {
+            margin-right: 1rem;
+            color: var(--text-secondary);
+            width: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+        }
+
+        .suggestion-item[data-type="history"] .suggestion-icon {
+            color: #6366f1;
+        }
+
+        .suggestion-item[data-type="suggestion"] .suggestion-icon {
+            color: #10b981;
+        }
+
+        .suggestion-item[data-type="popular"] .suggestion-icon {
+            color: #f59e0b;
+        }
+
+        .suggestion-text {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .suggestion-text mark {
+            background: rgba(99, 102, 241, 0.2);
+            color: #6366f1;
+            padding: 0.125rem 0.25rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        :root.light-mode .suggestion-text mark {
+            background: rgba(99, 102, 241, 0.15);
+            color: #4f46e5;
+        }        .suggestion-remove {
+            position: absolute;
+            right: 1rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: var(--transition);
+            font-size: 0.75rem;
+        }
+
+        .suggestion-item:hover .suggestion-remove {
+            opacity: 1;
+        }
+
+        .suggestion-remove:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            transform: scale(1.1);
+        }
+
+        .clear-history {
+            padding: 0.5rem 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .clear-history button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .clear-history button:hover {
+            background: var(--hover-color);
+            color: var(--text-color);
+        }        /* Light mode adjustments - removed background override */</style>
+</head>
+<body onclick="hideIfClickedOutside(event)">
+    <div class="search-container" id="search-container">
+        <div class="search-box">
+            <div class="search-input-container">
+                <input
+                    type="text"
+                    class="search-input"
+                    placeholder="Search the web"
+                    id="searchInput"
+                    autocomplete="off"
+                    autofocus
+                />
+                <i class="fas fa-search search-icon"></i>
+                
+                <!-- Search Suggestions Dropdown -->
+                <div class="search-suggestions" id="searchSuggestions">
+                    <!-- History Section -->
+                    <div class="suggestions-section" id="historySection">
+                        <div id="historyItems"></div>
+                    </div>
+                    
+                    <!-- Clear History Button -->
+                    <div class="clear-history" id="clearHistorySection">
+                        <button onclick="clearSearchHistory()">
+                            <i class="fas fa-trash-alt"></i>
+                            Clear search history
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    <script>
+        // Function to hide overlay when clicked outside search container
+        function hideIfClickedOutside(event) {
+            const searchContainer = document.getElementById('search-container');
+            if (searchContainer && !searchContainer.contains(event.target)) {
+                hideOverlay();
+            }
+        }
+
+        // Function to hide overlay and return focus to main window
+        function hideOverlay() {
+            if (window.electronAPI) {
+                window.electronAPI.hideQuickSearch();
+            }
+        }
+
+        // Search engines configuration (matching search.html)
+        const searchEngines = {
+            google: {
+                name: "Google",
+                searchUrl: "https://www.google.com/search?q=",
+                suggestUrl: "https://suggestqueries.google.com/complete/search?client=chrome&q="
+            },
+            bing: {
+                name: "Bing", 
+                searchUrl: "https://www.bing.com/search?q=",
+                suggestUrl: "https://api.bing.microsoft.com/qsonhs.aspx?type=cb&q="
+            },
+            duckduckgo: {
+                name: "DuckDuckGo",
+                searchUrl: "https://duckduckgo.com/?q=",
+                suggestUrl: "https://duckduckgo.com/ac/?q="
+            },
+            yahoo: {
+                name: "Yahoo",
+                searchUrl: "https://search.yahoo.com/search?p=",
+                suggestUrl: "https://search.yahoo.com/sugg/chrome?output=fxjson&command="
+            }
+        };
+
+        // Get current search engine from settings
+        async function getCurrentSearchEngine() {
+            try {
+                if (window.electronAPI && window.electronAPI.getSettings) {
+                    const settings = await window.electronAPI.getSettings();
+                    return settings.searchEngine || 'google';
+                }
+            } catch (error) {
+                console.log('Failed to get search engine setting:', error);
+            }
+            return 'google'; // Default fallback
+        }
+
+        // Enhanced SearchSuggestionManager for overlay (adapted from search.html)
+        class SearchSuggestionManager {
+            constructor() {
+                this.searchInput = document.getElementById('searchInput');
+                this.suggestionsContainer = document.getElementById('searchSuggestions');
+                this.historyItems = document.getElementById('historyItems');
+                
+                this.searchHistory = this.loadSearchHistory();
+                this.currentHighlight = -1;
+                this.currentSuggestions = [];
+                this.isVisible = false;
+                this.debounceTimer = null;
+                this.currentSearchEngine = 'google';
+                
+                // Initialize search engine
+                this.initializeSearchEngine();
+                
+                // Popular searches (like search.html)
+                this.popularSearches = [
+                    'ChatGPT',
+                    'YouTube',
+                    'Instagram',
+                    'Facebook', 
+                    'Twitter',
+                    'GitHub',
+                    'Netflix',
+                    'Amazon',
+                    'Google Translate',
+                    'Wikipedia',
+                    'LinkedIn',
+                    'Stack Overflow',
+                    'Reddit',
+                    'TikTok',
+                    'WhatsApp Web',
+                    'Gmail',
+                    'Weather',
+                    'News',
+                    'Sports',
+                    'Music'
+                ];
+                
+                this.initializeEventListeners();
+            }
+            
+            async initializeSearchEngine() {
+                try {
+                    this.currentSearchEngine = await getCurrentSearchEngine();
+                    console.log('Search engine initialized:', this.currentSearchEngine);
+                } catch (error) {
+                    console.log('Failed to initialize search engine, using Google:', error);
+                    this.currentSearchEngine = 'google';
+                }
+            }
+            
+            getSuggestApiUrl(query) {
+                const engine = searchEngines[this.currentSearchEngine] || searchEngines.google;
+                return engine.suggestUrl + encodeURIComponent(query);
+            }
+            
+            initializeEventListeners() {
+                // Focus and input events
+                this.searchInput.addEventListener('focus', () => {
+                    this.showSuggestions();
+                });
+                
+                this.searchInput.addEventListener('input', (e) => {
+                    this.handleInputWithDebounce(e.target.value);
+                });
+                
+                // Keyboard navigation
+                this.searchInput.addEventListener('keydown', (e) => {
+                    this.handleKeydown(e);
+                });
+                  // Click outside to close suggestions (but not overlay)
+                document.addEventListener('click', (e) => {
+                    if (!this.searchInput.contains(e.target) && 
+                        !this.suggestionsContainer.contains(e.target)) {
+                        this.hideSuggestions();
+                    }
+                });
+                  // Escape key to close overlay
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        this.hideSuggestions();
+                        hideOverlay(); // Use global function
+                    }
+                });
+            }
+            
+            handleInputWithDebounce(value) {
+                clearTimeout(this.debounceTimer);
+                this.debounceTimer = setTimeout(() => {
+                    this.updateSuggestions(value);
+                }, 150);
+            }
+            
+            handleKeydown(e) {
+                const suggestions = this.suggestionsContainer.querySelectorAll('.suggestion-item:not(.remove-mode)');
+                
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    this.currentHighlight = Math.min(this.currentHighlight + 1, suggestions.length - 1);
+                    this.updateHighlight(suggestions);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    this.currentHighlight = Math.max(this.currentHighlight - 1, -1);
+                    this.updateHighlight(suggestions);
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (this.currentHighlight >= 0 && suggestions[this.currentHighlight]) {
+                        const query = suggestions[this.currentHighlight].dataset.query;
+                        this.performSearchAction(query);
+                    } else {
+                        this.performSearchAction(this.searchInput.value);
+                    }                } else if (e.key === 'Escape') {
+                    this.hideSuggestions();
+                    hideOverlay(); // Use global function
+                }
+            }
+            
+            updateHighlight(suggestions) {
+                suggestions.forEach((item, index) => {
+                    item.classList.toggle('active', index === this.currentHighlight);
+                });
+                
+                if (this.currentHighlight >= 0 && suggestions[this.currentHighlight]) {
+                    suggestions[this.currentHighlight].scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest'
+                    });
+                }
+            }
+            
+            showSuggestions() {
+                this.isVisible = true;
+                this.updateSuggestions(this.searchInput.value);
+            }
+            
+            hideSuggestions() {
+                this.isVisible = false;
+                this.suggestionsContainer.classList.remove('show');
+                this.currentHighlight = -1;
+            }
+            
+            async updateSuggestions(query = '') {
+                if (!this.isVisible) return;
+                
+                query = query.trim();
+                this.currentHighlight = -1;
+                
+                // Get search history
+                const historyMatches = this.getHistoryMatches(query);
+                
+                // Get live suggestions for non-empty queries
+                let liveSuggestions = [];
+                if (query.length > 0) {
+                    liveSuggestions = await this.fetchLiveSuggestions(query);
+                }
+                
+                // Get popular searches for empty or short queries
+                let popularMatches = [];
+                if (query.length <= 2) {
+                    popularMatches = this.getPopularMatches(query);
+                }
+                
+                // Render all suggestions
+                this.renderSuggestions(historyMatches, liveSuggestions, popularMatches, query);
+            }
+            
+            getHistoryMatches(query) {
+                if (!query) return this.searchHistory.slice(0, 5);
+                
+                return this.searchHistory
+                    .filter(item => item.toLowerCase().includes(query.toLowerCase()))
+                    .slice(0, 3);
+            }
+            
+            getPopularMatches(query) {
+                if (!query) return this.popularSearches.slice(0, 8);
+                
+                return this.popularSearches
+                    .filter(item => item.toLowerCase().includes(query.toLowerCase()))
+                    .slice(0, 5);
+            }
+            
+            async fetchLiveSuggestions(query) {
+                if (query.length < 2) return [];
+                
+                try {
+                    const apiUrl = this.getSuggestApiUrl(query);
+                    const response = await fetch(apiUrl);
+                    
+                    if (!response.ok) return [];
+                    
+                    let suggestions = [];
+                    
+                    if (this.currentSearchEngine === 'google') {
+                        const text = await response.text();
+                        const jsonMatch = text.match(/\[.*\]/);
+                        if (jsonMatch) {
+                            const data = JSON.parse(jsonMatch[0]);
+                            suggestions = data[1] || [];
+                        }
+                    } else if (this.currentSearchEngine === 'duckduckgo') {
+                        const data = await response.json();
+                        suggestions = data.map(item => item.phrase || item);
+                    }
+                    
+                    return suggestions.slice(0, 6);
+                } catch (error) {
+                    console.log('Failed to fetch suggestions:', error);
+                    return [];
+                }
+            }
+            
+            renderSuggestions(historyMatches, liveSuggestions, popularMatches, query) {
+                let html = '';
+                
+                // History suggestions
+                if (historyMatches.length > 0) {
+                    html += historyMatches.map(item => `
+                        <div class="suggestion-item" data-query="${item}" data-type="history">
+                            <i class="fas fa-history suggestion-icon"></i>
+                            <span class="suggestion-text">${this.highlightMatch(item, query)}</span>
+                            <button class="suggestion-remove" data-query="${item}">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `).join('');
+                }
+                
+                // Live suggestions
+                if (liveSuggestions.length > 0) {
+                    html += liveSuggestions.map(item => `
+                        <div class="suggestion-item" data-query="${item}" data-type="suggestion">
+                            <i class="fas fa-search suggestion-icon"></i>
+                            <span class="suggestion-text">${this.highlightMatch(item, query)}</span>
+                        </div>
+                    `).join('');
+                }
+                
+                // Popular suggestions
+                if (popularMatches.length > 0 && !query) {
+                    html += popularMatches.map(item => `
+                        <div class="suggestion-item" data-query="${item}" data-type="popular">
+                            <i class="fas fa-fire suggestion-icon"></i>
+                            <span class="suggestion-text">${item}</span>
+                        </div>
+                    `).join('');
+                }
+                
+                if (html) {
+                    this.historyItems.innerHTML = html;
+                    this.suggestionsContainer.classList.add('show');
+                    this.attachEventListeners();
+                } else {
+                    this.suggestionsContainer.classList.remove('show');
+                }
+            }
+            
+            highlightMatch(text, query) {
+                if (!query) return text;
+                
+                const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                return text.replace(regex, '<mark>$1</mark>');
+            }
+            
+            attachEventListeners() {
+                // Click on suggestions
+                this.historyItems.querySelectorAll('.suggestion-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const query = item.dataset.query;
+                        this.searchInput.value = query;
+                        this.performSearchAction(query);
+                    });
+                });
+                
+                // Remove buttons
+                this.historyItems.querySelectorAll('.suggestion-remove').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const query = button.dataset.query;
+                        this.removeFromHistory(query);
+                    });
+                });
+            }
+            
+            loadSearchHistory() {
+                try {
+                    const stored = localStorage.getItem('quickSearchHistory');
+                    return stored ? JSON.parse(stored) : [];
+                } catch (error) {
+                    console.error('Error loading search history:', error);
+                    return [];
+                }
+            }
+            
+            saveSearchHistory() {
+                try {
+                    localStorage.setItem('quickSearchHistory', JSON.stringify(this.searchHistory));
+                } catch (error) {
+                    console.error('Error saving search history:', error);
+                }
+            }
+            
+            addToHistory(query) {
+                if (!query || this.searchHistory.includes(query)) return;
+                
+                this.searchHistory.unshift(query);
+                this.searchHistory = this.searchHistory.slice(0, 15);
+                this.saveSearchHistory();
+            }
+            
+            removeFromHistory(query) {
+                this.searchHistory = this.searchHistory.filter(item => item !== query);
+                this.saveSearchHistory();
+                this.updateSuggestions(this.searchInput.value);
+            }
+            
+            clearSearchHistory() {
+                this.searchHistory = [];
+                this.saveSearchHistory();
+                this.updateSuggestions(this.searchInput.value);
+            }
+            
+            async performSearchAction(query) {
+                if (!query.trim()) return;
+                
+                try {
+                    // Add to history
+                    this.addToHistory(query.trim());
+                    
+                    // Send search request to main process
+                    if (window.electronAPI) {
+                        await window.electronAPI.performOverlaySearch(query.trim());
+                    }
+                      // Hide overlay
+                    hideOverlay(); // Use global function
+                    
+                } catch (error) {
+                    console.error('Error performing search:', error);
+                }
+            }        }
+
+        // Global function for clearing search history (called from clear button)
+        function clearSearchHistory() {
+            if (window.searchManager) {
+                window.searchManager.clearSearchHistory();
+            }
+        }        // Initialize search manager when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.searchManager = new SearchSuggestionManager();
+            
+            // Prevent clicks inside search container from bubbling to body
+            const searchContainer = document.getElementById('search-container');
+            if (searchContainer) {
+                searchContainer.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+            }
+            
+            // Focus input after a short delay
+            setTimeout(() => {
+                window.searchManager.searchInput.focus();
+                window.searchManager.searchInput.select();
+            }, 100);
+
+            // Listen for theme changes
+            if (window.electronAPI && window.electronAPI.onThemeChange) {
+                window.electronAPI.onThemeChange((isDarkMode) => {
+                    if (isDarkMode) {
+                        document.documentElement.classList.remove('light-mode');
+                    } else {
+                        document.documentElement.classList.add('light-mode');
+                    }
+                });
+            }
+        });
+
+        // Clear search input when overlay is shown
+        window.addEventListener('focus', () => {
+            if (window.searchManager) {
+                window.searchManager.searchInput.value = '';
+                window.searchManager.searchInput.focus();
+                window.searchManager.updateSuggestions();
+            }
+        });
+    </script>
+</body>
+</html>

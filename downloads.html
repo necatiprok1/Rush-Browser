@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Downloads - Rush Browser</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+        :root {
+            --primary-color: #ffffff;
+            --primary-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            --secondary-color: #666666;
+            --accent-color: #ffffff;
+            --hover-color: #404040;
+            --bg-color: #0a0a0f;
+            --surface-color: #161620;
+            --surface-light: #1e1e2e;
+            --text-color: #ffffff;
+            --text-secondary: #a0a0b0;
+            --border-color: #2a2a3a;
+            --glass-bg: rgba(22, 22, 32, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow-primary: 0 8px 32px rgba(255, 255, 255, 0.1);
+            --shadow-secondary: 0 4px 16px rgba(0, 0, 0, 0.4);
+            --blur-amount: 12px;
+            --glow-color: rgba(255, 255, 255, 0.15);
+            --border-radius: 12px;
+            --border-radius-small: 8px;
+            --success-color: #4CAF50;
+            --warning-color: #FF9800;
+            --error-color: #f44336;
+            --info-color: #2196F3;
+        }        :root.light-mode {
+            --primary-color: #6c6c6c;
+            --primary-gradient: linear-gradient(135deg, #d1d5da 0%, #6c6c6c 100%);
+            --secondary-color: #cfd4d9;
+            --accent-color: #e4e6e8;
+            --hover-color: #ededed;
+            --bg-color: #ffffff;
+            --surface-color: #f9f9f9;
+            --surface-light: #ffffff;
+            --text-color: #333333;
+            --text-secondary: #777777;
+            --border-color: #dee2e6;
+            --glass-bg: rgba(255, 255, 255, 0.96);
+            --glass-border: rgba(0, 0, 0, 0.2);
+            --shadow-primary: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --shadow-secondary: 0 4px 16px rgba(0, 0, 0, 0.1);
+            --glow-color: rgba(0, 0, 0, 0.1);
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --error-color: #dc3545;
+            --info-color: #007bff;
+        }
+
+        /* Font Size Control */
+        :root {
+            --base-font-size: 1rem;
+        }
+
+        .font-small {
+            --base-font-size: 0.875rem;
+        }
+
+        .font-small * {
+            font-size: calc(var(--base-font-size) * 0.9) !important;
+        }
+
+        .font-medium {
+            --base-font-size: 1rem;
+        }
+
+        .font-medium * {
+            font-size: var(--base-font-size) !important;
+        }
+
+        .font-large {
+            --base-font-size: 1.125rem;
+        }
+
+        .font-large * {
+            font-size: calc(var(--base-font-size) * 1.1) !important;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 16px 0;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .downloads-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-secondary);
+        }
+
+        .downloads-stats {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius-small);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary {
+            background: var(--surface-light);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-primary);
+        }
+
+        .downloads-list {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-secondary);
+            overflow: hidden;
+        }
+
+        .download-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .download-item:last-child {
+            border-bottom: none;
+        }
+
+        .download-item:hover {
+            background: var(--surface-light);
+        }
+
+        .file-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-gradient);
+            border-radius: var(--border-radius-small);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .download-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0 0 4px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .download-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .file-size {
+            font-weight: 500;
+        }
+
+        .download-time {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .download-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 16px;
+            min-width: 100px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }        .status-completed { background: var(--success-color); }
+        .status-progress { background: var(--info-color); }
+        .status-progressing { background: var(--info-color); }
+        .status-started { background: var(--info-color); }
+        .status-retrying { background: var(--warning-color); }
+        .status-failed { background: var(--error-color); }
+        .status-paused { background: var(--warning-color); }
+        .status-cancelled { background: var(--error-color); }
+        .status-interrupted { background: var(--error-color); }
+
+        .status-text {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }        .progress-fill {
+            height: 100%;
+            background: var(--info-color);
+            transition: width 0.3s ease;
+        }
+
+        .progress-fill.indeterminate {
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                var(--info-color) 50%, 
+                transparent 100%);
+            animation: indeterminate 1.5s infinite linear;
+        }
+
+        .progress-fill.paused {
+            background: var(--warning-color);
+        }
+
+        @keyframes indeterminate {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .download-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: var(--border-radius-small);
+            background: var(--surface-light);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .action-btn.dangerous:hover {
+            background: var(--error-color);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+        }
+
+        .empty-description {
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        /* Light mode adjustments */
+        :root.light-mode .file-icon {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        :root.light-mode .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            .downloads-toolbar {
+                flex-direction: column;
+                gap: 20px;
+                align-items: stretch;
+            }
+
+            .downloads-stats {
+                justify-content: space-around;
+            }
+
+            .download-item {
+                padding: 16px;
+            }
+
+            .download-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .download-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-download"></i> Browser Downloads</h1>
+            <p>Manage and track your downloaded files</p>
+        </div>
+
+        <div class="downloads-toolbar">
+            <div class="downloads-stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="totalDownloads">0</span>
+                    <div class="stat-label">Total Downloads</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="activeDownloads">0</span>
+                    <div class="stat-label">Active</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="completedDownloads">0</span>
+                    <div class="stat-label">Completed</div>
+                </div>
+            </div>
+            <div class="toolbar-actions">                <button class="btn btn-secondary" id="clearCompletedBtn">
+                    <i class="fas fa-trash"></i>
+                    Clear Completed
+                </button>
+                <button class="btn btn-secondary" id="refreshDownloadsBtn">
+                    <i class="fas fa-sync"></i>
+                    Refresh
+                </button>
+                <button class="btn btn-primary" id="openDownloadFolderBtn">
+                    <i class="fas fa-folder-open"></i>
+                    Open Downloads Folder
+                </button>
+            </div>
+        </div>
+
+        <div class="downloads-list" id="downloadsList">
+            <!-- Downloads will be populated here -->
+        </div>
+    </div>    <script>
+        // Downloads data (will be loaded from main process)
+        let downloads = [];
+
+        function getFileIcon(filename) {
+            const extension = filename.split('.').pop().toLowerCase();
+            const iconMap = {
+                'pdf': 'fas fa-file-pdf',
+                'doc': 'fas fa-file-word',
+                'docx': 'fas fa-file-word',
+                'xls': 'fas fa-file-excel',
+                'xlsx': 'fas fa-file-excel',
+                'ppt': 'fas fa-file-powerpoint',
+                'pptx': 'fas fa-file-powerpoint',
+                'zip': 'fas fa-file-archive',
+                'rar': 'fas fa-file-archive',
+                '7z': 'fas fa-file-archive',
+                'jpg': 'fas fa-file-image',
+                'jpeg': 'fas fa-file-image',
+                'png': 'fas fa-file-image',
+                'gif': 'fas fa-file-image',
+                'mp3': 'fas fa-file-audio',
+                'mp4': 'fas fa-file-video',
+                'avi': 'fas fa-file-video',
+                'exe': 'fas fa-cog',
+                'msi': 'fas fa-cog',
+                'txt': 'fas fa-file-alt',
+                'html': 'fas fa-file-code',
+                'css': 'fas fa-file-code',
+                'js': 'fas fa-file-code'
+            };
+            return iconMap[extension] || 'fas fa-file';
+        }
+
+        function formatTime(date) {
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+
+            if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+            if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+            return 'Just now';
+        }        function getStatusText(download) {
+            switch (download.status) {
+                case 'completed':
+                    return 'Completed';
+                case 'progress':
+                case 'progressing':
+                    if (download.totalBytes === 0 || !download.totalBytes) {
+                        return 'Downloading...';
+                    }
+                    return `${Math.round(download.progress || 0)}%`;
+                case 'started':
+                    return 'Starting...';
+                case 'retrying':
+                    return 'Retrying...';
+                case 'failed':
+                    return 'Failed';
+                case 'paused':
+                    return 'Paused';
+                case 'cancelled':
+                    return 'Cancelled';
+                case 'interrupted':
+                    return 'Interrupted';
+                default:
+                    // Handle unknown status but still show progress if available
+                    if (download.progress > 0 && download.progress <= 100) {
+                        return `${Math.round(download.progress)}%`;
+                    }
+                    return 'Unknown';
+            }
+        }        function createDownloadItem(download) {
+            const item = document.createElement('div');
+            item.className = 'download-item';
+            item.dataset.downloadId = download.id;
+
+            // Debug logging for progress
+            console.log(`🎨 Creating download item for ${download.filename}:`, {
+                status: download.status,
+                progress: download.progress,
+                totalBytes: download.totalBytes,
+                receivedBytes: download.receivedBytes
+            });
+
+            // Handle progress bar for different scenarios
+            let progressBar = '';
+            if (download.status === 'progress' || download.status === 'progressing' || download.status === 'started') {
+                if (download.totalBytes === 0 || !download.totalBytes) {
+                    // Unknown file size - show indeterminate progress bar
+                    progressBar = `<div class="progress-bar">
+                        <div class="progress-fill indeterminate" style="width: 100%"></div>
+                    </div>`;
+                    console.log(`📊 Creating indeterminate progress bar for ${download.filename}`);
+                } else {
+                    // Known file size - show actual progress
+                    const progressPercent = Math.round(download.progress || 0);
+                    progressBar = `<div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                    </div>`;
+                    console.log(`📊 Creating progress bar for ${download.filename}: ${progressPercent}%`);
+                }
+            } else if (download.status === 'paused') {
+                const progressPercent = Math.round(download.progress || 0);
+                progressBar = `<div class="progress-bar">
+                    <div class="progress-fill paused" style="width: ${progressPercent}%"></div>
+                </div>`;
+                console.log(`⏸️ Creating paused progress bar for ${download.filename}: ${progressPercent}%`);
+            }
+
+            // Format download metadata
+            const fileSize = download.size || (download.totalBytes ? formatBytes(download.totalBytes) : 'Unknown size');
+            const speedInfo = download.speed && download.speed > 0 ? `${formatBytes(download.speed)}/s` : '';
+            const receivedInfo = download.receivedBytes ? `${formatBytes(download.receivedBytes)} / ${fileSize}` : fileSize;
+
+            item.innerHTML = `
+                <div class="file-icon">
+                    <i class="${getFileIcon(download.filename)}"></i>
+                </div>
+                <div class="download-info">
+                    <div class="file-name" title="${download.filename}">${download.filename}</div>
+                    <div class="download-meta">
+                        <span class="file-size">${receivedInfo}</span>
+                        <span class="download-time">
+                            <i class="fas fa-clock"></i>
+                            ${formatTime(new Date(download.startTime))}
+                        </span>
+                        ${speedInfo ? `<span class="download-speed">${speedInfo}</span>` : ''}
+                        ${download.status === 'failed' && download.error ? 
+                            `<span class="error-message" style="color: var(--error-color);">${download.error}</span>` : ''}
+                    </div>
+                    ${progressBar}
+                </div>
+                <div class="download-status">
+                    <span class="status-indicator status-${download.status}"></span>
+                    <span class="status-text">${getStatusText(download)}</span>
+                </div>
+                <div class="download-actions">
+                    ${download.status === 'completed' ? 
+                        `<button class="action-btn" onclick="openFile(${download.id})" title="Open file">
+                            <i class="fas fa-external-link-alt"></i>
+                        </button>
+                        <button class="action-btn" onclick="showInFolder(${download.id})" title="Show in folder">
+                            <i class="fas fa-folder-open"></i>
+                        </button>` : ''}
+                    ${download.status === 'progress' || download.status === 'progressing' || download.status === 'started' ? 
+                        `<button class="action-btn" onclick="pauseDownload(${download.id})" title="Pause">
+                            <i class="fas fa-pause"></i>
+                        </button>
+                        <button class="action-btn dangerous" onclick="cancelDownload(${download.id})" title="Cancel">
+                            <i class="fas fa-times"></i>
+                        </button>` : ''}
+                    ${download.status === 'paused' ? 
+                        `<button class="action-btn resume" onclick="resumeDownload(${download.id})" title="Resume">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="action-btn dangerous" onclick="cancelDownload(${download.id})" title="Cancel">
+                            <i class="fas fa-times"></i>
+                        </button>` : ''}
+                    ${download.status === 'failed' || download.status === 'interrupted' ? 
+                        `<button class="action-btn" onclick="retryDownload(${download.id})" title="Retry">
+                            <i class="fas fa-redo"></i>
+                        </button>` : ''}
+                    <button class="action-btn dangerous" onclick="removeDownload(${download.id})" title="Remove from list">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+
+            return item;
+        }
+
+        // Helper function to format bytes
+        function formatBytes(bytes, decimals = 1) {
+            if (bytes === 0) return '0 Bytes';
+            
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }        function renderDownloads() {
+            console.log('🎨 Rendering downloads list, total downloads:', downloads.length);
+            
+            const downloadsList = document.getElementById('downloadsList');
+            
+            if (downloads.length === 0) {
+                downloadsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <div class="empty-title">No downloads yet</div>
+                        <div class="empty-description">Your downloaded files will appear here</div>
+                    </div>
+                `;
+                return;
+            }
+
+            downloadsList.innerHTML = '';
+            
+            // Sort downloads by start time (newest first)
+            const sortedDownloads = [...downloads].sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
+            
+            console.log('📋 Rendering downloads in order:', sortedDownloads.map(d => ({
+                filename: d.filename,
+                progress: d.progress,
+                status: d.status
+            })));
+            
+            sortedDownloads.forEach(download => {
+                const downloadItem = createDownloadItem(download);
+                downloadsList.appendChild(downloadItem);
+            });
+            
+            console.log('✅ Downloads list render complete');
+        }
+
+        function updateStats() {
+            const total = downloads.length;
+            const active = downloads.filter(d => d.status === 'progress' || d.status === 'paused').length;
+            const completed = downloads.filter(d => d.status === 'completed').length;
+
+            document.getElementById('totalDownloads').textContent = total;
+            document.getElementById('activeDownloads').textContent = active;
+            document.getElementById('completedDownloads').textContent = completed;
+        }
+
+        // Action functions
+        async function openFile(id) {
+            const download = downloads.find(d => d.id === id);
+            if (download && window.electronAPI) {
+                await window.electronAPI.openFile(download.filePath);
+            } else {
+                alert(`Opening: ${download.filename}`);
+            }
+        }
+
+        async function showInFolder(id) {
+            const download = downloads.find(d => d.id === id);
+            if (download && window.electronAPI) {
+                await window.electronAPI.showInFolder(download.filePath);
+            } else {
+                alert(`Showing in folder: ${download.filename}`);            }
+        }
+
+        // Font size functions
+        async function initializeFontSize() {
+            if (window.electronAPI && window.electronAPI.getFontSize) {
+                try {
+                    const fontSize = await window.electronAPI.getFontSize();
+                    applyFontSize(fontSize);
+                } catch (error) {
+                    console.log('Failed to get font size:', error);
+                    applyFontSize('medium'); // Default fallback
+                }
+            } else {
+                applyFontSize('medium'); // Default fallback
+            }
+        }
+
+        function applyFontSize(size) {
+            // Remove existing font size classes
+            document.documentElement.classList.remove('font-small', 'font-medium', 'font-large');
+            
+            // Add the new font size class
+            if (size === 'small') {
+                document.documentElement.classList.add('font-small');
+            } else if (size === 'medium') {
+                document.documentElement.classList.add('font-medium');
+            } else if (size === 'large') {
+                document.documentElement.classList.add('font-large');
+            }
+        }
+
+        // Listen for font size changes
+        if (window.electronAPI && window.electronAPI.onFontSizeChange) {
+            window.electronAPI.onFontSizeChange((fontSize) => {
+                applyFontSize(fontSize);
+            });
+        }
+
+        function pauseDownload(id) {
+            // In a real implementation, this would pause the actual download
+            const download = downloads.find(d => d.id === id);
+            if (download) {
+                download.status = 'paused';
+                renderDownloads();
+                updateStats();
+            }
+        }
+
+        function cancelDownload(id) {
+            removeDownload(id);
+        }
+
+        function retryDownload(id) {
+            // In a real implementation, this would restart the download
+            const download = downloads.find(d => d.id === id);
+            if (download) {
+                download.status = 'progress';
+                download.progress = 0;
+                download.startTime = new Date();
+                renderDownloads();
+                updateStats();
+            }
+        }
+
+        async function removeDownload(id) {
+            if (window.electronAPI) {
+                await window.electronAPI.removeDownload(id);
+            } else {
+                downloads = downloads.filter(d => d.id !== id);
+                renderDownloads();
+                updateStats();
+            }
+        }
+
+        async function clearCompleted() {
+            if (window.electronAPI) {
+                await window.electronAPI.clearCompletedDownloads();
+            } else {
+                downloads = downloads.filter(d => d.status !== 'completed');
+                renderDownloads();
+                updateStats();
+            }
+        }
+
+        async function openDownloadFolder() {
+            if (window.electronAPI) {
+                await window.electronAPI.openDownloadFolder();
+            } else {
+                alert('Opening downloads folder...');
+            }
+        }
+
+        // Load downloads from main process
+        async function loadDownloads() {
+            if (window.electronAPI) {
+                try {
+                    downloads = await window.electronAPI.getDownloads();
+                    renderDownloads();
+                    updateStats();
+                } catch (error) {
+                    console.error('Failed to load downloads:', error);
+                }
+            }
+        }        // Event listeners
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Get theme from electronAPI
+            if (window.electronAPI && window.electronAPI.isDarkMode) {
+                try {
+                    const isDarkMode = await window.electronAPI.isDarkMode();
+                    if (!isDarkMode) {
+                        document.documentElement.classList.add('light-mode');
+                    }
+                } catch (error) {
+                    console.log('Theme detection failed, using dark mode');
+                }
+            } else {
+                // Fallback: Auto-detect theme from parent window
+                if (window.parent && window.parent.document.documentElement.classList.contains('light-mode')) {
+                    document.documentElement.classList.add('light-mode');
+                }
+            }
+
+            // Initialize font size
+            await initializeFontSize();document.getElementById('clearCompletedBtn').addEventListener('click', clearCompleted);
+            document.getElementById('refreshDownloadsBtn').addEventListener('click', () => {
+                console.log('🔄 Manual refresh triggered');
+                loadDownloads();
+            });
+            document.getElementById('openDownloadFolderBtn').addEventListener('click', openDownloadFolder);// Load initial downloads
+            loadDownloads();
+
+            // Set up fallback polling for active downloads
+            setInterval(() => {
+                const activeDownloads = downloads.filter(d => 
+                    d.status === 'progress' || 
+                    d.status === 'progressing' || 
+                    d.status === 'started'
+                );
+                
+                if (activeDownloads.length > 0) {
+                    console.log('🔄 Polling for download updates...');
+                    // Force re-fetch downloads from main process
+                    if (window.electronAPI && window.electronAPI.getDownloads) {
+                        window.electronAPI.getDownloads().then(latestDownloads => {
+                            // Only update if we have new data
+                            const hasChanges = latestDownloads.some((latest, index) => {
+                                const current = downloads[index];
+                                return !current || 
+                                       current.progress !== latest.progress || 
+                                       current.status !== latest.status ||
+                                       current.receivedBytes !== latest.receivedBytes;
+                            });
+                            
+                            if (hasChanges) {
+                                console.log('📊 Detected changes, updating UI...');
+                                downloads = latestDownloads;
+                                updateExistingDownloadItems(downloads);
+                                updateStats();
+                            }
+                        }).catch(error => {
+                            console.error('Error polling downloads:', error);
+                        });
+                    }
+                }
+            }, 500); // Poll every 500ms for active downloads// Listen for download updates if electronAPI is available
+            if (window.electronAPI && window.electronAPI.onDownloadUpdate) {
+                window.electronAPI.onDownloadUpdate((updatedDownloads) => {
+                    console.log('📥 Downloads Update Received:', updatedDownloads);
+                    
+                    // Update downloads array
+                    downloads = updatedDownloads;
+                    
+                    // Log progress for debugging
+                    updatedDownloads.forEach(download => {
+                        if (download.status === 'progress' || download.status === 'progressing' || download.status === 'started') {
+                            console.log(`🔄 Progress Update: ${download.filename} - ${Math.round(download.progress || 0)}%`);
+                        }
+                    });
+                    
+                    // Force re-render with progress updates
+                    renderDownloads();
+                    updateStats();
+                    
+                    // Also update individual items for better performance on subsequent updates
+                    updateExistingDownloadItems(updatedDownloads);
+                });
+            }
+
+            // Listen for theme changes from parent window
+            window.addEventListener('message', function(event) {
+                if (event.data.type === 'themeChange') {
+                    document.documentElement.classList.toggle('light-mode', event.data.isLightMode);
+                }
+            });
+        });
+
+        // Expose functions globally for onclick handlers
+        window.openFile = openFile;
+        window.showInFolder = showInFolder;
+        window.pauseDownload = pauseDownload;
+        window.cancelDownload = cancelDownload;
+        window.retryDownload = retryDownload;
+        window.removeDownload = removeDownload;
+
+        // Efficiently update existing download items without full re-render
+        function updateExistingDownloadItems(updatedDownloads) {
+            updatedDownloads.forEach(download => {
+                const existingItem = document.querySelector(`[data-download-id="${download.id}"]`);
+                if (existingItem) {
+                    updateDownloadItemProgress(existingItem, download);
+                }
+            });
+        }
+
+        // Update individual download item's progress
+        function updateDownloadItemProgress(itemElement, download) {
+            try {
+                // Update progress bar
+                const progressBar = itemElement.querySelector('.progress-fill');
+                if (progressBar) {
+                    if (download.status === 'progress' || download.status === 'progressing' || download.status === 'started') {
+                        if (download.totalBytes === 0 || !download.totalBytes) {
+                            // Unknown file size - keep indeterminate animation
+                            progressBar.className = 'progress-fill indeterminate';
+                            progressBar.style.width = '100%';
+                        } else {
+                            // Known file size - show actual progress
+                            const progressPercent = Math.round(download.progress || 0);
+                            progressBar.className = 'progress-fill';
+                            progressBar.style.width = `${progressPercent}%`;
+                            console.log(`🎯 Updated progress bar for ${download.filename}: ${progressPercent}%`);
+                        }
+                    } else if (download.status === 'paused') {
+                        const progressPercent = Math.round(download.progress || 0);
+                        progressBar.className = 'progress-fill paused';
+                        progressBar.style.width = `${progressPercent}%`;
+                    }
+                }
+
+                // Update status text
+                const statusText = itemElement.querySelector('.status-text');
+                if (statusText) {
+                    const newStatusText = getStatusText(download);
+                    if (statusText.textContent !== newStatusText) {
+                        statusText.textContent = newStatusText;
+                        console.log(`📊 Updated status text for ${download.filename}: ${newStatusText}`);
+                    }
+                }
+
+                // Update status indicator
+                const statusIndicator = itemElement.querySelector('.status-indicator');
+                if (statusIndicator) {
+                    statusIndicator.className = `status-indicator status-${download.status}`;
+                }
+
+                // Update metadata (file size, speed, received bytes)
+                const fileSizeElement = itemElement.querySelector('.file-size');
+                if (fileSizeElement && download.receivedBytes) {
+                    const fileSize = download.size || (download.totalBytes ? formatBytes(download.totalBytes) : 'Unknown size');
+                    const receivedInfo = `${formatBytes(download.receivedBytes)} / ${fileSize}`;
+                    fileSizeElement.textContent = receivedInfo;
+                }
+
+                // Update speed info
+                let speedElement = itemElement.querySelector('.download-speed');
+                if (download.speed && download.speed > 0) {
+                    if (!speedElement) {
+                        // Create speed element if it doesn't exist
+                        speedElement = document.createElement('span');
+                        speedElement.className = 'download-speed';
+                        const metaContainer = itemElement.querySelector('.download-meta');
+                        if (metaContainer) {
+                            metaContainer.appendChild(speedElement);
+                        }
+                    }
+                    speedElement.textContent = `${formatBytes(download.speed)}/s`;
+                } else if (speedElement) {
+                    speedElement.remove();
+                }
+
+            } catch (error) {
+                console.error('Error updating download item progress:', error);
+                // Fallback to full re-render if individual update fails
+                renderDownloads();
+            }
+        }
+    </script>
+</body>
+</html>

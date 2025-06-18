@@ -86,9 +86,50 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             padding-bottom: 1.5rem;
             border-bottom: 1px solid var(--border-color);
+        }
+
+        .settings-nav {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            padding: 0.5rem;
+            background-color: var(--surface-color);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--surface-hover);
+            color: var(--text-color);
+        }
+
+        .nav-btn.active {
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+        }
+
+        .nav-btn i {
+            font-size: 0.875rem;
         }
 
         .header h1 {
@@ -126,6 +167,17 @@
             transform: translateY(-1px);
             border-color: var(--border-color);
             box-shadow: var(--shadow);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--text-color);
         }
 
         .btn i {
@@ -229,7 +281,7 @@
         }
 
         /* Select yeniden tasarımı */
-        select {
+        select, input[type="url"] {
             padding: 0.5rem 2rem 0.5rem 1rem;
             font-size: 0.875rem;
             color: var(--text-color);
@@ -238,21 +290,35 @@
             border-radius: var(--radius);
             cursor: pointer;
             appearance: none;
+            transition: var(--transition);
+        }
+
+        select {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 0.5rem center;
             background-size: 1rem;
-            transition: var(--transition);
         }
 
-        select:hover {
+        input[type="url"] {
+            padding: 0.5rem 1rem;
+            cursor: text;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        select:hover, input[type="url"]:hover {
             background-color: var(--surface-hover);
             border-color: var(--border-color);
         }
 
-        select:focus {
+        select:focus, input[type="url"]:focus {
             outline: none;
             border-color: var(--text-color);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+        }
+
+        input[type="url"]:focus {
             box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
         }
 
@@ -294,6 +360,200 @@
             margin: 0;
             opacity: 0.8;
             max-width: 80%;
+        }
+
+        /* Dangerous Option Badge */
+        .dangerous-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            margin-left: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            box-shadow: 0 1px 3px rgba(220, 38, 38, 0.3);
+            animation: pulse-danger 2s infinite;
+        }
+
+        .dangerous-badge i {
+            font-size: 0.75rem;
+        }
+
+        @keyframes pulse-danger {
+            0%, 100% { 
+                opacity: 1; 
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 0.8; 
+                transform: scale(1.05);
+            }
+        }
+
+        /* Light mode dangerous badge */
+        :root.light-mode .dangerous-badge {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 1px 3px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Default Browser Status Indicator */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            margin-top: 0.5rem;
+        }
+
+        .status-default {
+            background-color: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .status-not-default {
+            background-color: rgba(249, 115, 22, 0.1);
+            color: #f97316;
+            border: 1px solid rgba(249, 115, 22, 0.2);
+        }
+
+        .status-indicator i {
+            font-size: 0.75rem;
+        }
+
+        :root.light-mode .status-default {
+            background-color: rgba(34, 197, 94, 0.15);
+            color: #16a34a;
+        }
+
+        :root.light-mode .status-not-default {
+            background-color: rgba(249, 115, 22, 0.15);
+            color: #ea580c;
+        }
+
+        /* Font Size Control */
+        :root {
+            --base-font-size: 1rem;
+            --small-font-size: 0.875rem;
+            --medium-font-size: 1rem;
+            --large-font-size: 1.125rem;
+        }
+
+        /* Font size classes */
+        .font-small {
+            --base-font-size: 0.875rem;
+        }
+
+        .font-small body {
+            font-size: 0.875rem;
+        }
+
+        .font-small h1 {
+            font-size: 1.625rem !important;
+        }
+
+        .font-small h2 {
+            font-size: 1.125rem !important;
+        }
+
+        .font-small h3 {
+            font-size: 0.875rem !important;
+        }
+
+        .font-small p {
+            font-size: 0.75rem !important;
+        }
+
+        .font-small .btn {
+            font-size: 0.75rem !important;
+        }
+
+        .font-small .nav-btn {
+            font-size: 0.75rem !important;
+        }
+
+        .font-small select, .font-small input {
+            font-size: 0.75rem !important;
+        }
+
+        .font-medium {
+            --base-font-size: 1rem;
+        }
+
+        .font-medium body {
+            font-size: 1rem;
+        }
+
+        .font-medium h1 {
+            font-size: 1.875rem !important;
+        }
+
+        .font-medium h2 {
+            font-size: 1.25rem !important;
+        }
+
+        .font-medium h3 {
+            font-size: 0.9375rem !important;
+        }
+
+        .font-medium p {
+            font-size: 0.8125rem !important;
+        }
+
+        .font-medium .btn {
+            font-size: 0.875rem !important;
+        }
+
+        .font-medium .nav-btn {
+            font-size: 0.875rem !important;
+        }
+
+        .font-medium select, .font-medium input {
+            font-size: 0.875rem !important;
+        }
+
+        .font-large {
+            --base-font-size: 1.125rem;
+        }
+
+        .font-large body {
+            font-size: 1.125rem;
+        }
+
+        .font-large h1 {
+            font-size: 2.125rem !important;
+        }
+
+        .font-large h2 {
+            font-size: 1.375rem !important;
+        }
+
+        .font-large h3 {
+            font-size: 1.0625rem !important;
+        }
+
+        .font-large p {
+            font-size: 0.9375rem !important;
+        }
+
+        .font-large .btn {
+            font-size: 1rem !important;
+        }
+
+        .font-large .nav-btn {
+            font-size: 1rem !important;
+        }
+
+        .font-large select, .font-large input {
+            font-size: 1rem !important;
         }
 
         @media (max-width: 640px) {
@@ -345,22 +605,25 @@
             </div>
         </header>
 
-        <section class="settings-section">
+        <!-- Settings Navigation -->
+        <nav class="settings-nav">
+            <button class="nav-btn active" onclick="showSection('general')" id="generalBtn">
+                <i class="fas fa-cog"></i>
+                General
+            </button>
+            <button class="nav-btn" onclick="showSection('appearance')" id="appearanceBtn">
+                <i class="fas fa-paint-brush"></i>
+                Appearance
+            </button>
+            <button class="nav-btn" onclick="showSection('privacy')" id="privacyBtn">
+                <i class="fas fa-shield-alt"></i>
+                Privacy & Security
+            </button>
+        </nav>
+
+        <section class="settings-section" id="generalSection">
             <h2><i class="fas fa-cog"></i> General Settings</h2>
             
-            <div class="setting-item">
-                <div class="setting-info">
-                    <h3>Dark Mode</h3>
-                    <p>Enable dark theme for the browser interface</p>
-                </div>
-                <div class="setting-control">
-                    <label class="switch">
-                        <input type="checkbox" id="darkMode">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
-
             <div class="setting-item">
                 <div class="setting-info">
                     <h3>Default Search Engine</h3>
@@ -385,14 +648,244 @@
                     <select id="homepage">
                         <option value="newtab">New Tab Page</option>
                         <option value="custom">Custom URL</option>
+                        <option value="lastsession">Last Session</option>
                     </select>
                 </div>
             </div>
 
             <div class="setting-item">
                 <div class="setting-info">
-                    <h3>Clear Data on Exit</h3>
-                    <p>Automatically clear browsing data when closing the browser</p>
+                    <h3>Quick Search</h3>
+                    <p>When enabled, opening a new tab will show a floating search bar on the current page instead of loading the New Tab Page.</p>
+                </div>
+                <div class="setting-control">
+                    <label class="switch">
+                        <input type="checkbox" id="quickSearch">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-item" id="customUrlContainer" style="display: none;">
+                <div class="setting-info">
+                    <h3>Custom Homepage URL</h3>
+                    <p>Enter the URL you want to load as your homepage</p>
+                </div>
+                <div class="setting-control">
+                    <input type="url" id="customUrl" placeholder="https://example.com" style="padding: 0.5rem 1rem; font-size: 0.875rem; color: var(--text-color); background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: var(--radius); width: 300px; transition: var(--transition);">
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Default Browser</h3>
+                    <p>Set Rush as your default browser</p>
+                    <div id="defaultBrowserStatus" style="margin-top: 0.5rem;">
+                        <span id="statusText" class="status-indicator status-not-default" style="display: inline-flex;">
+                            <i class="fas fa-spinner fa-spin"></i> Checking status...
+                        </span>
+                    </div>
+                </div>
+                <div class="setting-control">
+                    <button class="btn btn-outline" id="setDefaultBrowser" onclick="setAsDefaultBrowser()">
+                        <i class="fas fa-globe"></i>
+                        Set as Default
+                    </button>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Font Size</h3>
+                    <p>Adjust the browser interface font size</p>
+                </div>
+                <div class="setting-control">
+                    <select id="fontSize">
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section class="settings-section" id="appearanceSection" style="display: none;">
+            <h2><i class="fas fa-paint-brush"></i> Appearance</h2>
+            
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Dark Mode</h3>
+                    <p>Enable dark theme for the browser interface</p>
+                </div>
+                <div class="setting-control">
+                    <label class="switch">
+                        <input type="checkbox" id="darkMode">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Theme Selection</h3>
+                    <p>Choose between different visual themes</p>
+                </div>
+                <div class="setting-control">
+                    <select id="themeSelect">
+                        <option value="auto">Auto (System)</option>
+                        <option value="dark">Dark Theme</option>
+                        <option value="light">Light Theme</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Font Size</h3>
+                    <p>Adjust the browser interface font size</p>
+                </div>
+                <div class="setting-control">
+                    <select id="fontSize">
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="extra-large">Extra Large</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Toolbar Style</h3>
+                    <p>Choose your preferred toolbar appearance</p>
+                </div>
+                <div class="setting-control">
+                    <select id="toolbarStyle">
+                        <option value="modern">Modern</option>
+                        <option value="compact">Compact</option>
+                        <option value="classic">Classic</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section class="settings-section" id="privacySection" style="display: none;">
+            <h2><i class="fas fa-shield-alt"></i> Privacy & Security</h2>
+            
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Tracking Protection</h3>
+                    <p>Block websites from tracking your browsing activity</p>
+                </div>
+                <div class="setting-control">
+                    <label class="switch">
+                        <input type="checkbox" id="trackingProtection" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Block Pop-ups</h3>
+                    <p>Prevent annoying pop-up windows from opening</p>
+                </div>
+                <div class="setting-control">
+                    <label class="switch">
+                        <input type="checkbox" id="blockPopups" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Cookie Settings</h3>
+                    <p>Control how websites can store cookies</p>
+                </div>
+                <div class="setting-control">
+                    <select id="cookieSettings">
+                        <option value="allow">Allow All Cookies</option>
+                        <option value="block-third-party">Block Third-party Cookies</option>
+                        <option value="block-all">Block All Cookies</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>JavaScript</h3>
+                    <p>Enable or disable JavaScript execution</p>
+                </div>
+                <div class="setting-control">
+                    <label class="switch">
+                        <input type="checkbox" id="enableJavaScript" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Safe Browsing</h3>
+                    <p>Protect against malicious and phishing websites</p>
+                </div>
+                <div class="setting-control">
+                    <label class="switch">
+                        <input type="checkbox" id="safeBrowsing" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>HTTPS-Only Mode</h3>
+                    <p>Always use secure HTTPS connections when available</p>
+                </div>
+                <div class="setting-control">
+                    <label class="switch">
+                        <input type="checkbox" id="httpsOnly">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Clear Browsing Data</h3>
+                    <p>Remove browsing history, cookies, and cached files</p>
+                </div>
+                <div class="setting-control">
+                    <button class="btn btn-outline" onclick="clearBrowsingData()">
+                        <i class="fas fa-trash"></i>
+                        Clear Data
+                    </button>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Do Not Track</h3>
+                    <p>Send "Do Not Track" request to websites</p>
+                </div>
+                <div class="setting-control">
+                    <label class="switch">
+                        <input type="checkbox" id="doNotTrack">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h3>Clear Data on Exit
+                        <span class="dangerous-badge">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Dangerous
+                        </span>
+                    </h3>
+                    <p>When enabled, this setting will permanently erase all sessions, browsing history, tabs, saved preferences, and theme settings when the application is closed. Rush Browser will return to its original state as if freshly installed. This action is irreversible. Please enable it only if you fully understand the consequences.</p>
                 </div>
                 <div class="setting-control">
                     <label class="switch">
@@ -407,35 +900,356 @@
     <script>
         // Dark mode toggle functionality
         const darkModeToggle = document.getElementById('darkMode');
-        darkModeToggle.checked = document.documentElement.classList.contains('dark-mode');
+        const homepageSelect = document.getElementById('homepage');
+        const customUrlContainer = document.getElementById('customUrlContainer');
+        const customUrlInput = document.getElementById('customUrl');
+        const fontSizeSelect = document.getElementById('fontSize');
         
-        darkModeToggle.addEventListener('change', () => {
-            document.documentElement.classList.toggle('dark-mode', darkModeToggle.checked);
+        // Initial state will be set in DOMContentLoaded
+        
+        darkModeToggle.addEventListener('change', async () => {
+            document.documentElement.classList.toggle('light-mode', !darkModeToggle.checked);
+            
+            // Update the theme in main process if electronAPI is available
+            if (window.electronAPI && window.electronAPI.toggleDarkMode) {
+                try {
+                    await window.electronAPI.toggleDarkMode(darkModeToggle.checked);
+                } catch (error) {
+                    console.log('Failed to update theme:', error);
+                }
+            }
+        });
+
+        // Homepage selection change handler
+        homepageSelect.addEventListener('change', () => {
+            toggleCustomUrlInput();
+        });
+
+        // Font size change handler
+        fontSizeSelect.addEventListener('change', async () => {
+            const fontSize = fontSizeSelect.value;
+            applyFontSize(fontSize);
+            
+            // Save font size setting
+            if (window.electronAPI && window.electronAPI.saveSettings) {
+                try {
+                    const currentSettings = await window.electronAPI.getSettings() || {};
+                    currentSettings.fontSize = fontSize;
+                    await window.electronAPI.saveSettings(currentSettings);
+                } catch (error) {
+                    console.log('Failed to save font size setting:', error);
+                }
+            }
+        });
+
+        // Toggle custom URL input visibility
+        function toggleCustomUrlInput() {
+            const isCustomSelected = homepageSelect.value === 'custom';
+            customUrlContainer.style.display = isCustomSelected ? 'flex' : 'none';
+            
+            // Set proper z-index to ensure visibility
+            if (isCustomSelected) {
+                customUrlContainer.style.position = 'relative';
+                customUrlContainer.style.zIndex = '10';
+            }
+        }
+
+        // Apply font size to the entire page
+        function applyFontSize(size) {
+            // Remove existing font size classes
+            document.documentElement.classList.remove('font-small', 'font-medium', 'font-large');
+            
+            // Add the new font size class
+            if (size === 'small') {
+                document.documentElement.classList.add('font-small');
+            } else if (size === 'medium') {
+                document.documentElement.classList.add('font-medium');
+            } else if (size === 'large') {
+                document.documentElement.classList.add('font-large');
+            }
+            
+            // Notify main process about font size change if electronAPI is available
+            if (window.electronAPI && window.electronAPI.setFontSize) {
+                try {
+                    window.electronAPI.setFontSize(size);
+                } catch (error) {
+                    console.log('Failed to notify main process about font size change:', error);
+                }
+            }
+        }
+
+        // Section switching functionality
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.settings-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + 'Section').style.display = 'block';
+            
+            // Add active class to selected nav button
+            document.getElementById(sectionName + 'Btn').classList.add('active');
+        }
+
+        // Initialize with section from URL parameter or default to general
+        function initializeSection() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const section = urlParams.get('section') || 'general';
+            showSection(section);
+        }
+
+        // Load saved settings
+        async function loadSettings() {
+            try {
+                if (window.electronAPI && window.electronAPI.getSettings) {
+                    const settings = await window.electronAPI.getSettings();
+                    
+                    // Load homepage settings
+                    if (settings.homepage) {
+                        homepageSelect.value = settings.homepage;
+                    }
+                    
+                    // Load custom URL if it exists
+                    if (settings.customUrl) {
+                        customUrlInput.value = settings.customUrl;
+                    }
+                    
+                    // Load other settings
+                    if (settings.searchEngine) {
+                        document.getElementById('searchEngine').value = settings.searchEngine;
+                    }
+                    
+                    if (typeof settings.clearOnExit === 'boolean') {
+                        document.getElementById('clearOnExit').checked = settings.clearOnExit;
+                    }
+                    
+                    if (typeof settings.quickSearch === 'boolean') {
+                        document.getElementById('quickSearch').checked = settings.quickSearch;
+                    }
+                    
+                    // Load font size setting
+                    if (settings.fontSize) {
+                        fontSizeSelect.value = settings.fontSize;
+                        applyFontSize(settings.fontSize);
+                    } else {
+                        // Default to medium if no setting is saved
+                        fontSizeSelect.value = 'medium';
+                        applyFontSize('medium');
+                    }
+                    
+                    // Toggle custom URL input based on loaded settings
+                    toggleCustomUrlInput();
+                }
+            } catch (error) {
+                console.log('Failed to load settings:', error);
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize theme first
+            if (window.electronAPI && window.electronAPI.isDarkMode) {
+                try {
+                    const isDarkMode = await window.electronAPI.isDarkMode();
+                    darkModeToggle.checked = isDarkMode;
+                    if (!isDarkMode) {
+                        document.documentElement.classList.add('light-mode');
+                    }
+                } catch (error) {
+                    console.log('Theme detection failed, using default');
+                }
+            }
+            
+            // Load saved settings
+            await loadSettings();
+            
+            // Check default browser status
+            await checkDefaultBrowserStatus();
+            
+            initializeSection();
         });
 
         // Save settings functionality
-        function saveSettings() {
+        async function saveSettings() {
             const settings = {
                 darkMode: darkModeToggle.checked,
                 searchEngine: document.getElementById('searchEngine').value,
-                homepage: document.getElementById('homepage').value,
-                clearOnExit: document.getElementById('clearOnExit').checked
+                homepage: homepageSelect.value,
+                customUrl: customUrlInput.value.trim(),
+                clearOnExit: document.getElementById('clearOnExit').checked,
+                quickSearch: document.getElementById('quickSearch').checked,
+                fontSize: fontSizeSelect.value,
+                themeSelect: document.getElementById('themeSelect')?.value || 'auto',
+                toolbarStyle: document.getElementById('toolbarStyle')?.value || 'modern',
+                trackingProtection: document.getElementById('trackingProtection')?.checked || false,
+                blockPopups: document.getElementById('blockPopups')?.checked || false,
+                cookieSettings: document.getElementById('cookieSettings')?.value || 'allow',
+                enableJavaScript: document.getElementById('enableJavaScript')?.checked || true,
+                safeBrowsing: document.getElementById('safeBrowsing')?.checked || true,
+                httpsOnly: document.getElementById('httpsOnly')?.checked || false,
+                doNotTrack: document.getElementById('doNotTrack')?.checked || false
             };
 
-            // Burada settings'i local storage'a kaydedebilir veya bir API'ye gönderebilirsiniz
-            console.log('Settings saved:', settings);
+            // Validate custom URL if homepage is set to custom
+            if (settings.homepage === 'custom') {
+                if (!settings.customUrl) {
+                    alert('Please enter a custom URL for your homepage.');
+                    customUrlInput.focus();
+                    return;
+                }
+                
+                // Basic URL validation
+                try {
+                    new URL(settings.customUrl);
+                } catch (e) {
+                    alert('Please enter a valid URL (e.g., https://example.com).');
+                    customUrlInput.focus();
+                    return;
+                }
+            }
+
+            try {
+                // Save settings via electronAPI if available
+                if (window.electronAPI && window.electronAPI.saveSettings) {
+                    await window.electronAPI.saveSettings(settings);
+                } else {
+                    // Fallback to localStorage if electronAPI is not available
+                    localStorage.setItem('browser-settings', JSON.stringify(settings));
+                }
+                
+                console.log('Settings saved:', settings);
+                
+                // Successful save animation
+                const saveButton = document.querySelector('.btn');
+                const originalText = saveButton.innerHTML;
+                
+                saveButton.innerHTML = '<i class="fas fa-check"></i> Saved!';
+                saveButton.style.backgroundColor = 'var(--success-color)';
+                
+                setTimeout(() => {
+                    saveButton.innerHTML = originalText;
+                    saveButton.style.backgroundColor = '';
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Failed to save settings:', error);
+                alert('Failed to save settings. Please try again.');
+            }
+        }
+
+        // Clear browsing data functionality
+        function clearBrowsingData() {
+            if (confirm('Are you sure you want to clear all browsing data? This action cannot be undone.')) {
+                // Burada tarayıcı verilerini temizleme işlemi yapılır
+                console.log('Clearing browsing data...');
+                
+                // Simulated clearing process
+                const clearButton = event.target;
+                const originalText = clearButton.innerHTML;
+                
+                clearButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Clearing...';
+                clearButton.disabled = true;
+                
+                setTimeout(() => {
+                    clearButton.innerHTML = '<i class="fas fa-check"></i> Cleared!';
+                    
+                    setTimeout(() => {
+                        clearButton.innerHTML = originalText;
+                        clearButton.disabled = false;
+                    }, 2000);
+                }, 1500);
+            }
+        }
+
+        // Check default browser status
+        async function checkDefaultBrowserStatus() {
+            const statusElement = document.getElementById('statusText');
+            const buttonElement = document.getElementById('setDefaultBrowser');
             
-            // Başarılı kayıt animasyonu
-            const saveButton = document.querySelector('.btn');
-            const originalText = saveButton.innerHTML;
+            try {
+                if (window.electronAPI && window.electronAPI.isDefaultBrowser) {
+                    const isDefault = await window.electronAPI.isDefaultBrowser();
+                    updateDefaultBrowserStatus(isDefault);
+                } else {
+                    // Fallback if electronAPI is not available
+                    statusElement.textContent = 'Status check unavailable';
+                    statusElement.className = 'status-indicator status-not-default';
+                }
+            } catch (error) {
+                console.log('Failed to check default browser status:', error);
+                statusElement.textContent = 'Status check failed';
+                statusElement.className = 'status-indicator status-not-default';
+            }
+        }
+
+        // Update default browser status display
+        function updateDefaultBrowserStatus(isDefault) {
+            const statusElement = document.getElementById('statusText');
+            const buttonElement = document.getElementById('setDefaultBrowser');
             
-            saveButton.innerHTML = '<i class="fas fa-check"></i> Saved!';
-            saveButton.style.backgroundColor = 'var(--success-color)';
+            if (isDefault) {
+                statusElement.innerHTML = '<i class="fas fa-check-circle"></i> Rush is your default browser';
+                statusElement.className = 'status-indicator status-default';
+                buttonElement.innerHTML = '<i class="fas fa-check"></i> Already Default';
+                buttonElement.disabled = true;
+                buttonElement.style.opacity = '0.6';
+            } else {
+                statusElement.innerHTML = '<i class="fas fa-exclamation-circle"></i> Not your default browser';
+                statusElement.className = 'status-indicator status-not-default';
+                buttonElement.innerHTML = '<i class="fas fa-globe"></i> Set as Default';
+                buttonElement.disabled = false;
+                buttonElement.style.opacity = '1';
+            }
+        }
+
+        // Set as default browser
+        async function setAsDefaultBrowser() {
+            const button = document.getElementById('setDefaultBrowser');
+            const originalText = button.innerHTML;
             
-            setTimeout(() => {
-                saveButton.innerHTML = originalText;
-                saveButton.style.backgroundColor = '';
-            }, 2000);
+            try {
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Setting...';
+                button.disabled = true;
+                
+                if (window.electronAPI && window.electronAPI.setAsDefaultBrowser) {
+                    const result = await window.electronAPI.setAsDefaultBrowser();
+                    
+                    if (result.success) {
+                        button.innerHTML = '<i class="fas fa-check"></i> Success!';
+                        
+                        // Update status after a short delay
+                        setTimeout(async () => {
+                            await checkDefaultBrowserStatus();
+                        }, 1000);
+                        
+                        // Show success message
+                        setTimeout(() => {
+                            alert('Rush Browser has been set as your default browser!');
+                        }, 500);
+                    } else {
+                        throw new Error(result.error || 'Failed to set as default browser');
+                    }
+                } else {
+                    throw new Error('Default browser API not available');
+                }
+            } catch (error) {
+                console.error('Failed to set as default browser:', error);
+                button.innerHTML = '<i class="fas fa-times"></i> Failed';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }, 2000);
+                
+                // Show error message
+                alert('Failed to set Rush as default browser. Please try manually through your system settings.');
+            }
         }
     </script>
 </body>

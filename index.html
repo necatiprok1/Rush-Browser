@@ -36,29 +36,53 @@
                 --toolbar-padding: 10px;
                 --border-radius: 12px;
                 --border-radius-small: 8px;
+                --success-color: #4CAF50;
+                --warning-color: #FF9800;
+                --error-color: #f44336;
+                --info-color: #2196F3;
             }
 
             :root.light-mode {
-                --primary-color: #0066cc;
+                --primary-color: #6c6c6c;
                 --primary-gradient: linear-gradient(
                     135deg,
-                    #0066cc 0%,
-                    #004499 100%
+                    #d1d5da 0%,
+                    #6c6c6c 100%
                 );
-                --secondary-color: #6366f1;
-                --accent-color: #10b981;
-                --hover-color: #0052a3;
-                --bg-color: #f8fafc;
-                --surface-color: #ffffff;
-                --surface-light: #f1f5f9;
-                --text-color: #1e293b;
-                --text-secondary: #64748b;
-                --border-color: #e2e8f0;
-                --glass-bg: rgba(255, 255, 255, 0.9);
-                --glass-border: rgba(0, 0, 0, 0.1);
-                --shadow-primary: 0 8px 32px rgba(0, 102, 204, 0.15);
-                --shadow-secondary: 0 4px 16px rgba(0, 0, 0, 0.1);
-                --glow-color: rgba(0, 102, 204, 0.2);
+                --secondary-color: #cfd4d9; /* Açık gri, sekonder aksiyonlar için (daha soft) */
+                --accent-color: #e4e6e8; /* Vurgular için hafif ama okunabilir bir gri */
+                --hover-color: #ededed; /* Hover durumunda daha görünür soft gri */
+                --bg-color: #ffffff; /* Ana arka plan, saf beyaz */
+                --surface-color: #f9f9f9; /* Kart/modallar için dengeli bir açık ton */
+                --surface-light: #ffffff; /* İç gölgeler ve yumuşak katmanlar için */
+                --text-color: #333333; /* Ana metin, kontrastlı ve okunabilir */
+                --text-secondary: #777777; /* İkincil metin, sade ve dengeleyici */
+                --border-color: #000000; /* Komponent sınırları, dark mode'un tam tersi */
+
+                --glass-bg: rgba(
+                    255,
+                    255,
+                    255,
+                    0.96
+                ); /* Cam efekt için daha hafif opaklık */
+                --glass-border: rgba(
+                    0,
+                    0,
+                    0,
+                    0.2
+                ); /* Dark mode'un tersine siyah kenarlık */
+                --shadow-primary: 0 8px 32px rgba(0, 0, 0, 0.08); /* Hafif ama hacimli gölge */
+                --shadow-secondary: 0 4px 16px rgba(0, 0, 0, 0.1); /* Daha belirgin ikincil gölge */
+                --glow-color: rgba(
+                    0,
+                    0,
+                    0,
+                    0.1
+                ); /* Glow efekti için koyu ton */
+                --success-color: #28a745;
+                --warning-color: #ffc107;
+                --error-color: #dc3545;
+                --info-color: #007bff;
             }
 
             * {
@@ -122,7 +146,7 @@
                 top: 0;
                 left: 0;
                 right: 0;
-                z-index: 2147483647;
+                z-index: 1000;
                 box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
                 height: calc(
                     var(--tab-height) + var(--nav-height) +
@@ -139,42 +163,41 @@
             /* Tüm toolbar içeriğinin üstte kalmasını sağla */
             .browser-toolbar * {
                 position: relative;
-                z-index: 2147483647;
+                z-index: 1000;
                 pointer-events: all;
             }
 
             /* URL bar için özel stil */
             .url-bar {
                 position: relative;
-                z-index: 2147483647;
-                background-color: rgba(22, 22, 32, 0.7) !important;
+                z-index: 1000;
                 backdrop-filter: blur(10px);
                 -webkit-backdrop-filter: blur(10px);
-                border: 1px solid rgba(255, 255, 255, 0.08);
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                border: 1px solid var(--border-color);
+                box-shadow: var(--shadow-secondary);
                 transition: all 0.3s ease;
             }
 
             .url-bar:hover {
-                background-color: rgba(28, 28, 38, 0.8) !important;
-                border-color: rgba(255, 255, 255, 0.12);
+                background-color: var(--surface-light) !important;
+                border-color: var(--glass-border);
             }
 
-            /* Navigation butonları için özel stil */
+            /* Navigasyon butonları için özel stil */
             .nav-group {
                 position: relative;
-                z-index: 2147483647;
-                background-color: rgba(22, 22, 32, 0.7) !important;
+                z-index: 1000;
+                background-color: var(--surface-color) !important;
                 backdrop-filter: blur(10px);
                 -webkit-backdrop-filter: blur(10px);
-                border: 1px solid rgba(255, 255, 255, 0.08);
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                border: 1px solid var(--border-color);
+                box-shadow: var(--shadow-secondary);
                 transition: all 0.3s ease;
             }
 
             .nav-group:hover {
-                background-color: rgba(28, 28, 38, 0.8) !important;
-                border-color: rgba(255, 255, 255, 0.12);
+                background-color: var(--surface-light) !important;
+                border-color: var(--glass-border);
             }
 
             /* Tüm içerik alanını toolbar'ın altına it */
@@ -211,6 +234,94 @@
                 align-items: end;
             }
 
+            /* Özel sekme stilleri */
+            .tab {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 16px;
+                background-color: #f0f0f0;
+                border-radius: 6px;
+                cursor: pointer;
+                min-width: 100px;
+                max-width: 200px;
+                color: #505050;
+                font-weight: 500;
+                border: 1px solid #e5e5e5;
+                transition: all 0.2s ease;
+            }
+
+            .tab:hover {
+                background-color: #e8e8e8;
+                border-color: #d0d0d0;
+            }
+
+            .tab.active {
+                background-color: #333333;
+                color: #ffffff;
+                border-color: #2b2b2b;
+                font-weight: 600;
+            }
+
+            .tab.active:hover {
+                background-color: #404040;
+            }
+
+            .tab-title {
+                flex: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                font-size: 13px;
+            }
+
+            .tab-close {
+                opacity: 0.7;
+                color: inherit;
+            }
+
+            .tab-close:hover {
+                opacity: 1;
+            }
+
+            /* Dark mode için sekme stilleri */
+            :root.dark-mode .tab {
+                background-color: #2d2d2d;
+                border-color: #3d3d3d;
+                color: #e0e0e0;
+            }
+
+            :root.dark-mode .tab:hover {
+                background-color: #353535;
+                border-color: #454545;
+            }
+
+            :root.dark-mode .tab.active {
+                background-color: #1a1a1a;
+                color: #ffffff;
+                border-color: #505050;
+            }
+
+            :root.dark-mode .tab.active:hover {
+                background-color: #222222;
+            }
+
+            /* Light mode için sekme stilleri */
+            :root.light-mode .tab {
+                background-color: #ffffff;
+                border-color: #e0e0e0;
+                color: #555555;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            }
+
+            :root.light-mode .tab:hover {
+                background-color: #f8f8f8;
+                border-color: #d0d0d0;
+                color: #333333;
+            }
+
+            /* Light mode active tab styles moved to avoid conflicts */
+
             .tab {
                 display: flex;
                 align-items: center;
@@ -228,10 +339,34 @@
                 cursor: pointer;
                 user-select: none;
                 position: relative;
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
                 overflow: hidden;
                 box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
                 opacity: 0.85;
+                will-change: transform, opacity, background;
+                transform: translateZ(0); /* Hardware acceleration */
+                draggable: true;
+            }
+
+            /* Drag & Drop styles for tabs */
+            .tab.dragging {
+                opacity: 0.5;
+                transform: rotate(3deg) scale(1.05);
+                z-index: 1000;
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+                pointer-events: none;
+            }
+
+            .tab.drag-over {
+                transform: translateX(8px);
+                border-left: 3px solid var(--accent-color);
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            }
+
+            .tab.drag-over-left {
+                transform: translateX(-8px);
+                border-right: 3px solid var(--accent-color);
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
             }
 
             .tab::before {
@@ -247,7 +382,8 @@
                     rgba(255, 255, 255, 0.15) 100%
                 );
                 opacity: 0;
-                transition: opacity 0.3s ease;
+                transition: opacity 0.25s ease;
+                will-change: opacity;
             }
 
             .tab.active {
@@ -256,8 +392,9 @@
                 -webkit-backdrop-filter: blur(15px);
                 border-color: rgba(255, 255, 255, 0.12);
                 box-shadow: 0 -2px 15px rgba(255, 255, 255, 0.03);
-                transform: translateY(-2px);
+                transform: translateY(-2px) translateZ(0);
                 opacity: 1;
+                z-index: 10;
             }
 
             .tab.active::before {
@@ -267,8 +404,82 @@
             .tab:hover:not(.active) {
                 background: rgba(25, 25, 35, 0.6);
                 border-color: rgba(255, 255, 255, 0.08);
-                transform: translateY(-1px);
+                transform: translateY(-1px) translateZ(0);
                 opacity: 0.95;
+            }
+
+            /* Tab animations */
+            .tab.tab-entering {
+                animation: tabSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+                transform: translateX(-100%) translateZ(0);
+                opacity: 0;
+            }
+
+            .tab.tab-leaving {
+                animation: tabSlideOut 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            }
+
+            @keyframes tabSlideIn {
+                0% {
+                    transform: translateX(-100%) translateZ(0);
+                    opacity: 0;
+                    max-width: 0;
+                    padding: 0;
+                    margin: 0;
+                }
+                50% {
+                    opacity: 0.5;
+                    max-width: 120px;
+                }
+                100% {
+                    transform: translateX(0) translateZ(0);
+                    opacity: 0.85;
+                    max-width: 240px;
+                    padding: 0 12px;
+                }
+            }
+
+            @keyframes tabSlideOut {
+                0% {
+                    transform: translateX(0) translateZ(0);
+                    opacity: 0.85;
+                    max-width: 240px;
+                    padding: 0 12px;
+                }
+                50% {
+                    opacity: 0.3;
+                    max-width: 60px;
+                }
+                100% {
+                    transform: translateX(-100%) translateZ(0);
+                    opacity: 0;
+                    max-width: 0;
+                    padding: 0;
+                    margin: 0;
+                }
+            }
+
+            /* Tab state management */
+            .tab.switching {
+                pointer-events: none;
+                opacity: 0.6;
+                transform: scale(0.98) translateZ(0);
+            }
+
+            .tab.closing {
+                pointer-events: none;
+                opacity: 0.3;
+                transform: scale(0.95) translateZ(0);
+            }
+
+            /* Smooth tab transitions */
+            .tabs {
+                display: flex;
+                gap: 4px;
+                flex: 1;
+                align-items: end;
+                transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+                will-change: transform;
             }
 
             .tab-favicon {
@@ -373,8 +584,8 @@
             }
 
             .nav-group:hover {
-                background-color: rgba(28, 28, 38, 0.8) !important;
-                border-color: rgba(255, 255, 255, 0.12);
+                background-color: var(--surface-light) !important;
+                border-color: var(--glass-border);
             }
 
             .nav-group button {
@@ -499,6 +710,7 @@
                 font-size: 14px;
                 color: var(--accent-color);
                 filter: drop-shadow(0 0 4px var(--accent-color));
+                margin-right: 8px;
             }
 
             .url-display {
@@ -535,6 +747,38 @@
             .bookmark-button.bookmarked {
                 color: var(--accent-color);
                 filter: drop-shadow(0 0 4px var(--accent-color));
+            }
+
+            .downloads-button {
+                padding: 12px 16px;
+                background: none;
+                border: none;
+                color: var(--text-secondary);
+                cursor: pointer;
+                transition: all 0.2s ease;
+                border-radius: 50%;
+                position: relative;
+            }
+
+            .downloads-button:hover {
+                color: var(--accent-color);
+                transform: scale(1.1);
+                filter: drop-shadow(0 0 8px var(--accent-color));
+            }
+
+            .downloads-button .download-count {
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                background: #ff4757;
+                color: white;
+                font-size: 10px;
+                font-weight: bold;
+                padding: 2px 6px;
+                border-radius: 12px;
+                min-width: 16px;
+                text-align: center;
+                display: none;
             }
 
             .browser-controls {
@@ -625,39 +869,9 @@
                 height: 100%;
             }
 
-            /* Animations */
-            @keyframes pulse {
-                0% {
-                    box-shadow: 0 0 0 0 var(--glow-color);
-                }
-                70% {
-                    box-shadow: 0 0 0 10px rgba(0, 212, 255, 0);
-                }
-                100% {
-                    box-shadow: 0 0 0 0 rgba(0, 212, 255, 0);
-                }
-            }
-
-            .tab.active {
-                animation: pulse 2s infinite;
-            }
-
-            @keyframes slideIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(-20px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-
-            .tab {
-                animation: slideIn 0.3s ease-out;
-            }
-
-            /* Scrollbar Styling */
+            /* Removed problematic animations that cause jitter */
+            
+            /* Smooth scrollbar styling */
             .tabs-container::-webkit-scrollbar {
                 height: 4px;
             }
@@ -775,6 +989,212 @@
                 color: #ff6b6b;
                 text-shadow: 0 0 10px #ff6b6b;
             }
+
+            /* Light mode için güvenlik ikonları */
+            :root.light-mode .secure-icon.https {
+                color: #28a745;
+                text-shadow: none;
+                filter: none;
+            }
+
+            :root.light-mode .secure-icon.http {
+                color: #dc3545;
+                text-shadow: none;
+                filter: none;
+            }
+
+            :root.light-mode .secure-icon {
+                color: #6c757d;
+                filter: none;
+            }
+
+            /* Light mode için özel URL bar ve buton stilleri */
+            :root.light-mode .url-bar {
+                background-color: var(--glass-bg);
+                border: 1px solid var(--border-color);
+                box-shadow: var(--shadow-secondary);
+                border-radius: 12px;
+            }
+
+            :root.light-mode .url-bar:focus-within {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px var(--glow-color);
+                background-color: var(--surface-light);
+            }
+
+            :root.light-mode .url-bar:hover {
+                border-color: var(--glass-border);
+                background-color: var(--surface-light);
+            }
+
+            /* URL bar içindeki input için özel stil */
+            :root.light-mode .url-display {
+                color: var(--text-color);
+                font-size: 14px;
+                font-weight: 400;
+            }
+
+            :root.light-mode .url-display::placeholder {
+                color: var(--text-secondary);
+            }
+
+            /* Remove duplicate generic rules - styles will be handled by existing .url-bar class */
+
+            /* Navigasyon butonları için özel stil - fixed dimensions */
+            :root.light-mode .nav-group button {
+                color: #495057;
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                /* border-radius: 8px; - default border-radius kullanılacak */
+                /* padding: 8px 12px; - boyut değişikliğini önlemek için kaldırıldı */
+                transition: all 0.2s ease;
+            }
+
+            :root.light-mode .nav-group button:hover {
+                background-color: #e9ecef;
+                color: #343a40;
+                border-color: #adb5bd;
+                /* transform: translateY(-1px); - boyut değişikliğini önlemek için kaldırıldı */
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            :root.light-mode .nav-group button:disabled {
+                color: #adb5bd;
+                background-color: #f8f9fa;
+                border-color: #e9ecef;
+                cursor: not-allowed;
+                opacity: 0.6;
+            }
+
+            /* Bookmark butonu için light mode stilleri */
+            :root.light-mode .bookmark-button {
+                color: #6c757d;
+                background-color: transparent;
+            }
+
+            :root.light-mode .bookmark-button:hover {
+                color: #495057;
+                background-color: rgba(108, 117, 125, 0.1);
+                /* transform: scale(1.05); - boyut değişikliğini önlemek için kaldırıldı */
+                filter: none;
+            }
+
+            :root.light-mode .bookmark-button.bookmarked {
+                color: #ffc107;
+                filter: none;
+            }
+
+            /* Downloads butonu için light mode stilleri */
+            :root.light-mode .downloads-button {
+                color: #6c757d;
+                background-color: transparent;
+            }
+
+            :root.light-mode .downloads-button:hover {
+                color: #495057;
+                background-color: rgba(108, 117, 125, 0.1);
+                filter: none;
+            }
+
+            /* Light mode için aktif sekme stili - lighter and more visible */
+            :root.light-mode .tab.active {
+                background-color: #e8e8e8 !important;
+                color: #333333 !important;
+                border-color: #cccccc !important;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+                font-weight: 600 !important;
+            }
+
+            :root.light-mode .tab.active:hover {
+                background-color: #f0f0f0 !important;
+                border-color: #bbbbbb !important;
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2) !important;
+            }
+
+            /* Light mode drag & drop styles */
+            :root.light-mode .tab.drag-over {
+                border-left-color: var(--primary-color);
+                box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            }
+
+            :root.light-mode .tab.drag-over-left {
+                border-right-color: var(--primary-color);
+                box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            }
+
+            /* Navigasyon bar arka planı için özel stil - fixed dimensions */
+            :root.light-mode .navigation-bar {
+                background-color: #fafafa;
+                /* Boyut değişikliklerini engellemek için aynı padding ve gap kullan */
+                /* border-radius: 8px; - kaldırıldı boyut değişikliğini önlemek için */
+                /* padding: 6px 8px; - kaldırıldı, default padding korunacak */
+                /* gap: 8px; - kaldırıldı, default gap korunacak */
+            }
+
+            /* Light mode için control button stilleri - fixed dimensions */
+            :root.light-mode .control-button {
+                color: #495057;
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                /* border-radius: 8px; - default border-radius kullanılacak */
+                /* padding: 8px 12px; - boyut değişikliğini önlemek için kaldırıldı */
+                transition: all 0.2s ease;
+            }
+
+            :root.light-mode .control-button:hover {
+                background-color: #e9ecef;
+                color: #343a40;
+                border-color: #adb5bd;
+                /* transform: translateY(-1px); - boyut değişikliğini önlemek için kaldırıldı */
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            /* Light mode için zoom kontrolleri - fixed dimensions */
+            :root.light-mode .zoom-group {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                /* border-radius: 8px; - default border-radius kullanılacak */
+                /* padding: 4px; - default padding korunacak */
+            }
+
+            :root.light-mode .zoom-group button {
+                color: #495057;
+                background-color: transparent;
+                border: none;
+                /* padding: 6px 10px; - boyut değişikliğini önlemek için kaldırıldı */
+                /* border-radius: 6px; - default border-radius kullanılacak */
+                transition: all 0.2s ease;
+            }
+
+            :root.light-mode .zoom-group button:hover {
+                background-color: #e9ecef;
+                color: #343a40;
+            }
+
+            :root.light-mode .zoom-level {
+                color: #495057;
+                font-weight: 500;
+                padding: 0 8px;
+                background-color: transparent;
+            }
+
+            /* Light mode için theme toggle button */
+            :root.light-mode .theme-toggle-button {
+                color: #495057;
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                border-radius: 8px;
+                padding: 8px 12px;
+                transition: all 0.2s ease;
+            }
+
+            :root.light-mode .theme-toggle-button:hover {
+                background-color: #e9ecef;
+                color: #343a40;
+                border-color: #adb5bd;
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
         </style>
     </head>
     <body>
@@ -794,20 +1214,34 @@
                 </div>
                 <div class="navigation-bar">
                     <div class="nav-group">
-                        <button onclick="goBack()" title="Back" id="backBtn">
+                        <button
+                            onclick="goBack()"
+                            title="Back"
+                            id="backBtn"
+                            class="nav-button"
+                        >
                             <i class="fas fa-arrow-left"></i>
                         </button>
                         <button
                             onclick="goForward()"
                             title="Forward"
                             id="forwardBtn"
+                            class="nav-button"
                         >
                             <i class="fas fa-arrow-right"></i>
                         </button>
-                        <button onclick="refresh()" title="Refresh">
+                        <button
+                            onclick="refresh()"
+                            title="Refresh"
+                            class="nav-button"
+                        >
                             <i class="fas fa-redo"></i>
                         </button>
-                        <button onclick="goHome()" title="Home">
+                        <button
+                            onclick="goHome()"
+                            title="Home"
+                            class="nav-button"
+                        >
                             <i class="fas fa-home"></i>
                         </button>
                     </div>
@@ -834,6 +1268,15 @@
                             >
                                 <i class="far fa-star"></i>
                             </button>
+                            <button
+                                onclick="openDownloads()"
+                                id="downloadsButton"
+                                class="downloads-button"
+                                title="Downloads"
+                            >
+                                <i class="fas fa-download"></i>
+                                <span class="download-count" id="downloadCount" style="display: none;">0</span>
+                            </button>
                         </div>
                     </div>
 
@@ -852,63 +1295,481 @@
             </div>
 
             <div class="content-area">
-                <div style="text-align: center">
-                    <i
-                        class="fas fa-rocket"
-                        style="
-                            font-size: 48px;
-                            margin-bottom: 20px;
-                            opacity: 0.3;
-                        "
-                    ></i>
-                    <p>Website content would appear here</p>
-                    <p style="font-size: 14px; opacity: 0.7">
-                        Enter a URL in the address bar to navigate
-                    </p>
-                    <button
-                        onclick="toggleDarkMode()"
-                        title="Toggle Theme"
-                        class="theme-toggle-button"
-                        id="themeButton"
-                    >
-                        <i class="fas fa-moon"></i>
+                <!-- Website content will be rendered here -->
+            </div>
+        </div>
+
+        <!-- Developer Console -->
+        <div id="devConsole" class="dev-console hidden">
+            <div class="dev-console-header">
+                <div class="dev-console-tabs">
+                    <button class="dev-tab active" data-panel="console">Console</button>
+                    <button class="dev-tab" data-panel="elements">Elements</button>
+                    <button class="dev-tab" data-panel="network">Network</button>
+                    <button class="dev-tab" data-panel="sources">Sources</button>
+                    <button class="dev-tab" data-panel="application">Application</button>
+                </div>
+                <div class="dev-console-controls">
+                    <button class="dev-control-btn" id="clearConsole" title="Clear console">
+                        <i class="fas fa-ban"></i>
+                    </button>
+                    <button class="dev-control-btn" id="consoleSettings" title="Console settings">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="dev-control-btn" id="closeConsole" title="Close console">
+                        <i class="fas fa-times"></i>
                     </button>
                 </div>
             </div>
-
-            <style>
-                .theme-toggle-button {
-                    margin-top: 20px;
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 50%;
-                    background: var(--surface-color);
-                    border: 2px solid var(--border-color);
-                    color: var(--text-color);
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    transition: all 0.3s ease;
-                    font-size: 20px;
-                }
-
-                .theme-toggle-button:hover {
-                    transform: scale(1.1);
-                    background: var(--primary-gradient);
-                    border-color: var(--primary-color);
-                    box-shadow: 0 0 20px var(--glow-color);
-                }
-
-                .theme-toggle-button i {
-                    transition: transform 0.3s ease;
-                }
-
-                .theme-toggle-button:hover i {
-                    transform: rotate(360deg);
-                }
-            </style>
+            
+            <div class="dev-console-content">
+                <!-- Console Panel -->
+                <div id="consolePanel" class="dev-panel active">
+                    <div class="console-output" id="consoleOutput"></div>
+                    <div class="console-input-container">
+                        <span class="console-prompt">&gt;</span>
+                        <input type="text" id="consoleInput" class="console-input" placeholder="Enter JavaScript expression..." />
+                    </div>
+                </div>
+                
+                <!-- Elements Panel -->
+                <div id="elementsPanel" class="dev-panel">
+                    <div class="elements-container">
+                        <div class="dom-tree" id="domTree"></div>
+                        <div class="element-styles" id="elementStyles">
+                            <h3>Styles</h3>
+                            <div class="styles-content"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Network Panel -->
+                <div id="networkPanel" class="dev-panel">
+                    <div class="network-toolbar">
+                        <button class="network-btn" id="clearNetwork">Clear</button>
+                        <label class="network-filter">
+                            <input type="checkbox" id="preserveLog" checked> Preserve log
+                        </label>
+                    </div>
+                    <div class="network-table">
+                        <div class="network-header">
+                            <span class="network-col name">Name</span>
+                            <span class="network-col status">Status</span>
+                            <span class="network-col type">Type</span>
+                            <span class="network-col size">Size</span>
+                            <span class="network-col time">Time</span>
+                        </div>
+                        <div class="network-body" id="networkBody"></div>
+                    </div>
+                </div>
+                
+                <!-- Sources Panel -->
+                <div id="sourcesPanel" class="dev-panel">
+                    <div class="sources-container">
+                        <div class="sources-tree">
+                            <h3>Page</h3>
+                            <div class="sources-files" id="sourcesFiles"></div>
+                        </div>
+                        <div class="source-editor">
+                            <pre id="sourceCode">Select a file from the tree to view its source code</pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Application Panel -->
+                <div id="applicationPanel" class="dev-panel">
+                    <div class="application-container">
+                        <div class="application-tree">
+                            <div class="app-section">
+                                <h3>Storage</h3>
+                                <div class="app-item" data-storage="localStorage">Local Storage</div>
+                                <div class="app-item" data-storage="sessionStorage">Session Storage</div>
+                                <div class="app-item" data-storage="cookies">Cookies</div>
+                            </div>
+                        </div>
+                        <div class="application-content" id="applicationContent">
+                            <div class="storage-table">
+                                <div class="storage-header">
+                                    <span class="storage-col key">Key</span>
+                                    <span class="storage-col value">Value</span>
+                                </div>
+                                <div class="storage-body" id="storageBody"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <style>
+            /* Developer Console Styles */
+            .dev-console {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 50vh;
+                background-color: var(--surface-color);
+                border-top: 2px solid var(--border-color);
+                display: flex;
+                flex-direction: column;
+                z-index: 500;
+                font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+                font-size: 12px;
+                transition: transform 0.3s ease;
+            }
+            
+            .dev-console.hidden {
+                transform: translateY(100%);
+            }
+            
+            .dev-console-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background-color: var(--primary-color);
+                padding: 8px 16px;
+                border-bottom: 1px solid var(--border-color);
+            }
+            
+            .dev-console-tabs {
+                display: flex;
+                gap: 4px;
+            }
+            
+            .dev-tab {
+                background: none;
+                border: none;
+                color: var(--text-secondary);
+                padding: 8px 16px;
+                cursor: pointer;
+                border-radius: 4px;
+                transition: all 0.2s ease;
+                font-size: 11px;
+                font-weight: 500;
+            }
+            
+            .dev-tab:hover {
+                background-color: var(--surface-light);
+                color: var(--text-color);
+            }
+            
+            .dev-tab.active {
+                background-color: var(--accent-color);
+                color: var(--bg-color);
+            }
+            
+            .dev-console-controls {
+                display: flex;
+                gap: 8px;
+            }
+            
+            .dev-control-btn {
+                background: none;
+                border: none;
+                color: var(--text-secondary);
+                cursor: pointer;
+                padding: 6px;
+                border-radius: 4px;
+                transition: all 0.2s ease;
+                width: 32px;
+                height: 32px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .dev-control-btn:hover {
+                background-color: var(--surface-light);
+                color: var(--text-color);
+            }
+            
+            .dev-console-content {
+                flex: 1;
+                overflow: hidden;
+                position: relative;
+            }
+            
+            .dev-panel {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                display: none;
+                overflow: auto;
+            }
+            
+            .dev-panel.active {
+                display: block;
+            }
+            
+            /* Console Panel Styles */
+            #consolePanel {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .console-output {
+                flex: 1;
+                overflow-y: auto;
+                padding: 8px;
+                background-color: var(--bg-color);
+            }
+            
+            .console-log {
+                padding: 4px 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+                font-size: 11px;
+                word-wrap: break-word;
+            }
+            
+            .console-log.error {
+                color: #ff6b6b;
+            }
+            
+            .console-log.warn {
+                color: #feca57;
+            }
+            
+            .console-log.info {
+                color: #54a0ff;
+            }
+            
+            .console-log.log {
+                color: var(--text-color);
+            }
+            
+            .console-input-container {
+                display: flex;
+                align-items: center;
+                padding: 8px;
+                background-color: var(--surface-color);
+                border-top: 1px solid var(--border-color);
+            }
+            
+            .console-prompt {
+                color: var(--text-secondary);
+                margin-right: 8px;
+                font-weight: bold;
+            }
+            
+            .console-input {
+                flex: 1;
+                background: none;
+                border: none;
+                color: var(--text-color);
+                font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+                font-size: 12px;
+                outline: none;
+            }
+            
+            /* Elements Panel Styles */
+            .elements-container {
+                display: flex;
+                height: 100%;
+            }
+            
+            .dom-tree {
+                flex: 1;
+                padding: 8px;
+                background-color: var(--bg-color);
+                overflow-y: auto;
+                border-right: 1px solid var(--border-color);
+            }
+            
+            .element-styles {
+                width: 300px;
+                padding: 8px;
+                background-color: var(--surface-color);
+                overflow-y: auto;
+            }
+            
+            .dom-element {
+                padding: 2px 0;
+                cursor: pointer;
+                font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+                font-size: 11px;
+                color: var(--text-color);
+            }
+            
+            .dom-element:hover {
+                background-color: var(--surface-light);
+            }
+            
+            .dom-element.selected {
+                background-color: var(--primary-color);
+                color: white;
+            }
+            
+            /* Network Panel Styles */
+            .network-toolbar {
+                padding: 8px;
+                background-color: var(--surface-color);
+                border-bottom: 1px solid var(--border-color);
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+            
+            .network-btn {
+                background-color: var(--primary-color);
+                color: white;
+                border: none;
+                padding: 6px 12px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 11px;
+            }
+            
+            .network-filter {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 11px;
+                color: var(--text-color);
+            }
+            
+            .network-table {
+                flex: 1;
+                overflow: auto;
+            }
+            
+            .network-header {
+                display: flex;
+                background-color: var(--surface-color);
+                border-bottom: 1px solid var(--border-color);
+                font-weight: bold;
+                font-size: 11px;
+                color: var(--text-color);
+            }
+            
+            .network-col {
+                padding: 8px;
+                border-right: 1px solid var(--border-color);
+            }
+            
+            .network-col.name { flex: 2; }
+            .network-col.status { flex: 0.5; }
+            .network-col.type { flex: 0.8; }
+            .network-col.size { flex: 0.8; }
+            .network-col.time { flex: 0.8; }
+            
+            /* Sources Panel Styles */
+            .sources-container {
+                display: flex;
+                height: 100%;
+            }
+            
+            .sources-tree {
+                width: 250px;
+                padding: 8px;
+                background-color: var(--surface-color);
+                border-right: 1px solid var(--border-color);
+                overflow-y: auto;
+            }
+            
+            .source-editor {
+                flex: 1;
+                padding: 8px;
+                background-color: var(--bg-color);
+                overflow: auto;
+            }
+            
+            #sourceCode {
+                font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+                font-size: 11px;
+                color: var(--text-color);
+                white-space: pre-wrap;
+                margin: 0;
+            }
+            
+            /* Application Panel Styles */
+            .application-container {
+                display: flex;
+                height: 100%;
+            }
+            
+            .application-tree {
+                width: 200px;
+                padding: 8px;
+                background-color: var(--surface-color);
+                border-right: 1px solid var(--border-color);
+                overflow-y: auto;
+            }
+            
+            .application-content {
+                flex: 1;
+                padding: 8px;
+                background-color: var(--bg-color);
+                overflow: auto;
+            }
+            
+            .app-section h3 {
+                font-size: 12px;
+                color: var(--text-color);
+                margin: 0 0 8px 0;
+            }
+            
+            .app-item {
+                padding: 4px 8px;
+                cursor: pointer;
+                font-size: 11px;
+                color: var(--text-secondary);
+                border-radius: 4px;
+            }
+            
+            .app-item:hover {
+                background-color: var(--surface-light);
+                color: var(--text-color);
+            }
+            
+            .storage-table {
+                font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            }
+            
+            .storage-header {
+                display: flex;
+                background-color: var(--surface-color);
+                border-bottom: 1px solid var(--border-color);
+                font-weight: bold;
+                font-size: 11px;
+                color: var(--text-color);
+            }
+            
+            .storage-col {
+                padding: 8px;
+                border-right: 1px solid var(--border-color);
+            }
+            
+            .storage-col.key { flex: 1; }
+            .storage-col.value { flex: 2; }
+            
+            /* Light mode adjustments for dev console */
+            :root.light-mode .dev-console {
+                background-color: #f8f9fa;
+                border-top-color: #dee2e6;
+            }
+            
+            :root.light-mode .dev-console-header {
+                background-color: #e9ecef;
+                border-bottom-color: #dee2e6;
+            }
+            
+            :root.light-mode .dev-tab.active {
+                background-color: #007bff;
+                color: white;
+            }
+            
+            :root.light-mode .console-output {
+                background-color: white;
+            }
+            
+            :root.light-mode .console-log {
+                border-bottom-color: rgba(0, 0, 0, 0.05);
+            }
+        </style>
 
         <script>
             // Browser functionality
@@ -939,74 +1800,462 @@
                 window.electronAPI.closeTab(tabId);
             }
 
+            // Optimized tab rendering with animations
+            let isRenderingTabs = false;
+            let pendingTabUpdate = null;
+
             function renderTabs() {
+                // Debounce rapid updates
+                if (isRenderingTabs) {
+                    pendingTabUpdate = true;
+                    return;
+                }
+
+                isRenderingTabs = true;
                 const tabsContainer = document.querySelector(".tabs");
-                tabsContainer.innerHTML = "";
+                
+                // Get current tabs for comparison
+                const existingTabs = Array.from(tabsContainer.children);
+                const existingTabIds = existingTabs.map(tab => parseInt(tab.dataset.tabId || 0));
+                const newTabIds = tabs.map(tab => tab.id);
 
-                tabs.forEach((tab) => {
-                    const tabElement = document.createElement("div");
-                    tabElement.className = `tab${tab.active ? " active" : ""}`;
-                    tabElement.onclick = () => switchToTab(tab.id);
-
-                    // Favicon container
-                    const favicon = document.createElement("div");
-                    favicon.className = "tab-favicon";
-                    if (tab.url && tab.url !== "about:blank") {
-                        try {
-                            const urlObj = new URL(tab.url);
-                            favicon.innerHTML = `<img src="https://www.google.com/s2/favicons?domain=${urlObj.hostname}&sz=16" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 16 16\\'%3E%3Ccircle cx=\\'8\\' cy=\\'8\\' r=\\'7\\' fill=\\'%23757575\\'/%3E%3C/svg%3E'">`;
-                        } catch {
-                            favicon.innerHTML = '<i class="fas fa-globe"></i>';
-                        }
-                    } else {
-                        favicon.innerHTML = '<i class="fas fa-globe"></i>';
-                    }
-
-                    const title = document.createElement("span");
-                    title.className = "tab-title";
-                    title.textContent =
-                        tab.title || getTabTitle(tab.url) || "New Tab";
-
-                    const closeButton = document.createElement("span");
-                    closeButton.className = "tab-close";
-                    closeButton.innerHTML = '<i class="fas fa-times"></i>';
-                    closeButton.onclick = (e) => closeTab(tab.id, e);
-
-                    tabElement.appendChild(favicon);
-                    tabElement.appendChild(title);
-                    tabElement.appendChild(closeButton);
-                    tabsContainer.appendChild(tabElement);
+                // Find tabs to remove
+                const tabsToRemove = existingTabs.filter(tab => {
+                    const tabId = parseInt(tab.dataset.tabId || 0);
+                    return !newTabIds.includes(tabId);
                 });
+
+                // Find tabs to add
+                const tabsToAdd = tabs.filter(tab => !existingTabIds.includes(tab.id));
+
+                // Animate removed tabs
+                tabsToRemove.forEach(tabElement => {
+                    tabElement.classList.add('tab-leaving');
+                    setTimeout(() => {
+                        if (tabElement.parentNode) {
+                            tabElement.parentNode.removeChild(tabElement);
+                        }
+                    }, 250);
+                });
+
+                // Update existing tabs
+                existingTabs.forEach(tabElement => {
+                    const tabId = parseInt(tabElement.dataset.tabId || 0);
+                    const tab = tabs.find(t => t.id === tabId);
+                    if (tab && !tabsToRemove.includes(tabElement)) {
+                        updateTabElement(tabElement, tab);
+                    }
+                });
+
+                // Add new tabs with animation
+                tabsToAdd.forEach(tab => {
+                    const tabElement = createTabElement(tab);
+                    tabElement.dataset.tabId = tab.id;
+                    tabElement.classList.add('tab-entering');
+                    tabsContainer.appendChild(tabElement);
+                    
+                    // Trigger animation
+                    requestAnimationFrame(() => {
+                        tabElement.classList.remove('tab-entering');
+                    });
+                });
+
+                // Finish rendering
+                setTimeout(() => {
+                    isRenderingTabs = false;
+                    if (pendingTabUpdate) {
+                        pendingTabUpdate = false;
+                        renderTabs();
+                    }
+                }, 50);
             }
 
+            function createTabElement(tab) {
+                const tabElement = document.createElement("div");
+                tabElement.className = `tab${tab.active ? " active" : ""}`;
+                tabElement.onclick = () => switchToTab(tab.id);
+                tabElement.draggable = true;
+                tabElement.dataset.tabId = tab.id;
+
+                // Drag & Drop event listeners
+                tabElement.addEventListener('dragstart', handleDragStart);
+                tabElement.addEventListener('dragover', handleDragOver);
+                tabElement.addEventListener('drop', handleDrop);
+                tabElement.addEventListener('dragend', handleDragEnd);
+                tabElement.addEventListener('dragenter', handleDragEnter);
+                tabElement.addEventListener('dragleave', handleDragLeave);
+
+                // Favicon container
+                const favicon = document.createElement("div");
+                favicon.className = "tab-favicon";
+                updateFavicon(favicon, tab.url);
+
+                const title = document.createElement("span");
+                title.className = "tab-title";
+                title.textContent = tab.title || getTabTitle(tab.url) || "New Tab";
+
+                const closeButton = document.createElement("span");
+                closeButton.className = "tab-close";
+                closeButton.innerHTML = '<i class="fas fa-times"></i>';
+                closeButton.onclick = (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    closeTab(tab.id, e);
+                };
+                closeButton.onmousedown = (e) => {
+                    e.stopPropagation(); // Prevent drag from starting when clicking close button
+                };
+
+                tabElement.appendChild(favicon);
+                tabElement.appendChild(title);
+                tabElement.appendChild(closeButton);
+
+                return tabElement;
+            }
+
+            // Drag & Drop functionality for tabs
+            let draggedTab = null;
+            let draggedTabId = null;
+
+            function handleDragStart(e) {
+                draggedTab = e.target;
+                draggedTabId = parseInt(e.target.dataset.tabId);
+                e.target.classList.add('dragging');
+                
+                // Set drag data
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/html', e.target.outerHTML);
+                e.dataTransfer.setData('text/plain', draggedTabId.toString());
+            }
+
+            function handleDragOver(e) {
+                if (e.preventDefault) {
+                    e.preventDefault();
+                }
+                e.dataTransfer.dropEffect = 'move';
+                return false;
+            }
+
+            function handleDragEnter(e) {
+                if (e.target === draggedTab) return;
+                
+                const tabsContainer = document.querySelector('.tabs');
+                const tabs = Array.from(tabsContainer.children);
+                const draggedIndex = tabs.indexOf(draggedTab);
+                const targetIndex = tabs.indexOf(e.target.closest('.tab'));
+                
+                if (targetIndex !== -1 && targetIndex !== draggedIndex) {
+                    // Clear all drag-over classes
+                    tabs.forEach(tab => {
+                        tab.classList.remove('drag-over', 'drag-over-left');
+                    });
+                    
+                    // Add appropriate class based on drop position
+                    if (targetIndex > draggedIndex) {
+                        e.target.closest('.tab').classList.add('drag-over');
+                    } else {
+                        e.target.closest('.tab').classList.add('drag-over-left');
+                    }
+                }
+            }
+
+            function handleDragLeave(e) {
+                // Only remove classes if we're leaving the tab entirely
+                if (!e.target.closest('.tab').contains(e.relatedTarget)) {
+                    e.target.closest('.tab').classList.remove('drag-over', 'drag-over-left');
+                }
+            }
+
+            function handleDrop(e) {
+                if (e.stopPropagation) {
+                    e.stopPropagation();
+                }
+                
+                if (draggedTab !== e.target.closest('.tab')) {
+                    const tabsContainer = document.querySelector('.tabs');
+                    const tabs = Array.from(tabsContainer.children);
+                    const draggedIndex = tabs.indexOf(draggedTab);
+                    const targetIndex = tabs.indexOf(e.target.closest('.tab'));
+                    
+                    if (targetIndex !== -1 && targetIndex !== draggedIndex) {
+                        // Reorder tabs in the DOM
+                        if (targetIndex > draggedIndex) {
+                            // Insert after target
+                            tabsContainer.insertBefore(draggedTab, tabs[targetIndex].nextSibling);
+                        } else {
+                            // Insert before target
+                            tabsContainer.insertBefore(draggedTab, tabs[targetIndex]);
+                        }
+                        
+                        // Reorder tabs in our data structure
+                        reorderTabsInArray(draggedTabId, targetIndex);
+                        
+                        // Send reorder request to main process
+                        if (window.electronAPI && window.electronAPI.reorderTabs) {
+                            const newOrder = Array.from(tabsContainer.children).map(tab => 
+                                parseInt(tab.dataset.tabId)
+                            );
+                            window.electronAPI.reorderTabs(newOrder);
+                        }
+                    }
+                }
+                
+                return false;
+            }
+
+            function handleDragEnd(e) {
+                e.target.classList.remove('dragging');
+                
+                // Clear all drag-over classes
+                const tabs = document.querySelectorAll('.tab');
+                tabs.forEach(tab => {
+                    tab.classList.remove('drag-over', 'drag-over-left');
+                });
+                
+                draggedTab = null;
+                draggedTabId = null;
+            }
+
+            function reorderTabsInArray(draggedId, targetIndex) {
+                const draggedTabIndex = tabs.findIndex(tab => tab.id === draggedId);
+                if (draggedTabIndex !== -1) {
+                    // Remove dragged tab from array
+                    const [draggedTabData] = tabs.splice(draggedTabIndex, 1);
+                    
+                    // Calculate new position
+                    let newIndex = targetIndex;
+                    if (draggedTabIndex < targetIndex) {
+                        newIndex = targetIndex - 1;
+                    }
+                    
+                    // Insert at new position
+                    tabs.splice(newIndex, 0, draggedTabData);
+                }
+            }
+
+            function updateTabElement(tabElement, tab) {
+                // Ensure drag & drop functionality
+                if (!tabElement.draggable) {
+                    tabElement.draggable = true;
+                    tabElement.dataset.tabId = tab.id;
+                    
+                    // Add drag & drop event listeners if not already added
+                    if (!tabElement.hasAttribute('data-drag-enabled')) {
+                        tabElement.addEventListener('dragstart', handleDragStart);
+                        tabElement.addEventListener('dragover', handleDragOver);
+                        tabElement.addEventListener('drop', handleDrop);
+                        tabElement.addEventListener('dragend', handleDragEnd);
+                        tabElement.addEventListener('dragenter', handleDragEnter);
+                        tabElement.addEventListener('dragleave', handleDragLeave);
+                        tabElement.setAttribute('data-drag-enabled', 'true');
+                    }
+                }
+
+                // Update active state with force refresh
+                const wasActive = tabElement.classList.contains('active');
+                const isActive = tab.active;
+                
+                // Force remove and add active class to ensure CSS is properly applied
+                tabElement.classList.remove('active');
+                if (isActive) {
+                    // Use setTimeout to ensure the DOM has updated
+                    setTimeout(() => {
+                        tabElement.classList.add('active');
+                    }, 10);
+                }
+
+                // Update title
+                const titleElement = tabElement.querySelector('.tab-title');
+                const newTitle = tab.title || getTabTitle(tab.url) || "New Tab";
+                if (titleElement.textContent !== newTitle) {
+                    titleElement.textContent = newTitle;
+                }
+
+                // Update favicon
+                const faviconElement = tabElement.querySelector('.tab-favicon');
+                updateFavicon(faviconElement, tab.url);
+            }
+
+            function updateFavicon(faviconElement, url) {
+                if (url && url !== "about:blank") {
+                    try {
+                        const urlObj = new URL(url);
+                        const expectedFavicon = `https://www.google.com/s2/favicons?domain=${urlObj.hostname}&sz=16`;
+                        const currentImg = faviconElement.querySelector('img');
+                        
+                        if (!currentImg || currentImg.src !== expectedFavicon) {
+                            faviconElement.innerHTML = `<img src="${expectedFavicon}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 16 16\\'%3E%3Ccircle cx=\\'8\\' cy=\\'8\\' r=\\'7\\' fill=\\'%23757575\\'/%3E%3C/svg%3E'">`;
+                        }
+                    } catch {
+                        if (!faviconElement.querySelector('i')) {
+                            faviconElement.innerHTML = '<i class="fas fa-globe"></i>';
+                        }
+                    }
+                } else {
+                    if (!faviconElement.querySelector('i')) {
+                        faviconElement.innerHTML = '<i class="fas fa-globe"></i>';
+                    }
+                }
+            }
+
+            // Improved tab switching with error handling - SECOND OCCURRENCE
             function switchToTab(tabId) {
-                window.electronAPI.switchTab(tabId);
+                console.log(`[UI] Switching to tab ${tabId}`);
+                
+                if (!tabId) {
+                    console.error("[UI] switchToTab called with invalid tabId");
+                    return;
+                }
+
+                // Prevent double-clicking with shorter timeout
+                const tabElement = document.querySelector(`[data-tab-id="${tabId}"]`);
+                if (tabElement && tabElement.classList.contains('switching')) {
+                    console.log("[UI] Tab switch already in progress");
+                    return;
+                }
+
+                // Mark as switching with shorter timeout
+                if (tabElement) {
+                    tabElement.classList.add('switching');
+                    setTimeout(() => {
+                        tabElement.classList.remove('switching');
+                    }, 300); // Reduced from 1000ms to 300ms
+                }
+
+                // Call electron API with better error handling
+                window.electronAPI.switchTab(tabId)
+                    .then((success) => {
+                        if (success) {
+                            console.log(`[UI] Successfully switched to tab ${tabId}`);
+                            // Force immediate UI update
+                            setTimeout(() => {
+                                const activeTab = tabs.find(t => t.id === tabId);
+                                if (activeTab) {
+                                    activeTab.active = true;
+                                    tabs.forEach(t => {
+                                        if (t.id !== tabId) t.active = false;
+                                    });
+                                    renderTabs();
+                                }
+                            }, 50);
+                        } else {
+                            console.error(`[UI] Failed to switch to tab ${tabId}`);
+                            // Remove switching class on failure
+                            if (tabElement) {
+                                tabElement.classList.remove('switching');
+                            }
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(`[UI] Error switching to tab ${tabId}:`, error);
+                        // Remove switching class on error
+                        if (tabElement) {
+                            tabElement.classList.remove('switching');
+                        }
+                    });
             }
 
             function closeTab(tabId, event) {
+                console.log(`[UI] Closing tab ${tabId}`);
+                
                 if (event) {
                     event.stopPropagation();
+                    event.preventDefault();
                 }
-                window.electronAPI.closeTab(tabId);
+
+                if (!tabId) {
+                    console.error("[UI] closeTab called with invalid tabId");
+                    return;
+                }
+
+                // Prevent double-clicking with shorter timeout
+                const tabElement = document.querySelector(`[data-tab-id="${tabId}"]`);
+                if (tabElement && tabElement.classList.contains('closing')) {
+                    console.log("[UI] Tab close already in progress");
+                    return;
+                }
+
+                // Mark as closing
+                if (tabElement) {
+                    tabElement.classList.add('closing');
+                    // Auto-remove closing class after 2 seconds as fallback
+                    setTimeout(() => {
+                        if (tabElement && tabElement.classList.contains('closing')) {
+                            tabElement.classList.remove('closing');
+                        }
+                    }, 2000);
+                }
+
+                window.electronAPI.closeTab(tabId)
+                    .then((success) => {
+                        if (success) {
+                            console.log(`[UI] Successfully closed tab ${tabId}`);
+                            // Remove from local tabs array immediately
+                            const index = tabs.findIndex(t => t.id === tabId);
+                            if (index !== -1) {
+                                tabs.splice(index, 1);
+                                renderTabs();
+                            }
+                        } else {
+                            console.error(`[UI] Failed to close tab ${tabId}`);
+                            // Remove closing class on failure
+                            if (tabElement) {
+                                tabElement.classList.remove('closing');
+                            }
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(`[UI] Error closing tab ${tabId}:`, error);
+                        // Remove closing class on error
+                        if (tabElement) {
+                            tabElement.classList.remove('closing');
+                        }
+                    });
             }
 
-            // Update tab info when received from main process - ENHANCED REAL-TIME
+            // Update tab info when received from main process - OPTIMIZED with better active state handling
             window.electronAPI.onTabUpdate((tab) => {
-                const activeTab = tabs.find((t) => t.active);
-                if (activeTab) {
-                    activeTab.active = false;
+                console.log(`[UI] Tab update received for tab ${tab.id}, active: ${tab.active}`);
+                
+                // Validate tab data
+                if (!tab.id) {
+                    console.error("[UI] Invalid tab update received - missing ID");
+                    return;
                 }
 
-                const existingTab = tabs.find((t) => t.id === tab.id);
-                if (existingTab) {
-                    Object.assign(existingTab, tab);
-                } else {
-                    tabs.push(tab);
-                }
-
-                // Real-time updates for active tab
+                // First, mark all tabs as inactive if this tab is becoming active
                 if (tab.active) {
-                    if (tab.url) {
+                    tabs.forEach((t) => {
+                        if (t.id !== tab.id) {
+                            t.active = false;
+                        }
+                    });
+                }
+
+                const existingTabIndex = tabs.findIndex((t) => t.id === tab.id);
+                if (existingTabIndex !== -1) {
+                    // Update existing tab with validation
+                    const existingTab = tabs[existingTabIndex];
+                    tabs[existingTabIndex] = { 
+                        ...existingTab, 
+                        ...tab,
+                        // Ensure we don't overwrite with undefined values
+                        url: tab.url || existingTab.url || "about:blank",
+                        title: tab.title || existingTab.title || "New Tab"
+                    };
+                } else {
+                    // Add new tab with defaults
+                    tabs.push({
+                        id: tab.id,
+                        url: tab.url || "about:blank",
+                        title: tab.title || "New Tab",
+                        active: tab.active || false
+                    });
+                }
+
+                // Only update UI for active tab immediately
+                if (tab.active) {
+                    if (tab.url && tab.url !== "about:blank") {
                         updateUrlDisplay(tab.url);
                         updateSecurityIcon(tab.url);
                     }
@@ -1016,6 +2265,7 @@
                     }
                 }
 
+                // Force immediate render for active state changes
                 renderTabs();
             });
 
@@ -1328,6 +2578,263 @@
                 }
             }
 
+            function openDownloads() {
+                if (window.electronAPI && window.electronAPI.openDownloadsTab) {
+                    window.electronAPI.openDownloadsTab();
+                } else {
+                    // Fallback for when electronAPI is not available
+                    const downloadsUrl = "file://" + window.location.pathname.replace("index.html", "downloads.html");
+                    newTab(downloadsUrl);
+                }
+            }
+
+            // Downloads tracking
+            let downloadCount = 0;
+
+            function updateDownloadCount(count) {
+                downloadCount = count;
+                const countBadge = document.getElementById('downloadCount');
+                
+                if (count > 0) {
+                    countBadge.textContent = count;
+                    countBadge.style.display = 'block';
+                } else {
+                    countBadge.style.display = 'none';
+                }
+            }
+
+            // Listen for download updates from main process if available
+            if (window.electronAPI && window.electronAPI.onDownloadUpdate) {
+                window.electronAPI.onDownloadUpdate((downloads) => {
+                    const activeDownloads = downloads.filter(d => 
+                        d.status === 'progress' || 
+                        d.status === 'progressing' || 
+                        d.status === 'started' || 
+                        d.status === 'paused'
+                    ).length;
+                    updateDownloadCount(activeDownloads);
+                    
+                    // Update progress for active downloads
+                    downloads.forEach(download => {
+                        if (download.status === 'progress' || download.status === 'progressing') {
+                            updateDownloadProgress(download.filename, download.progress);
+                        }
+                    });
+                });
+
+                // Listen for download completion notifications
+                window.electronAPI.onDownloadCompleted((data) => {
+                    showDownloadNotification(`✅ ${data.filename} downloaded successfully!`, 'success');
+                });
+
+                // Listen for download failure notifications
+                window.electronAPI.onDownloadFailed((data) => {
+                    showDownloadNotification(`❌ ${data.filename} download failed: ${data.error}`, 'error');
+                });
+
+                // Listen for download start notifications
+                window.electronAPI.onDownloadStarted((data) => {
+                    showDownloadNotification(`⬇️ Downloading ${data.filename}...`, 'info');
+                });
+            }
+
+            // Show download notification (simple toast-like notification)
+            function showDownloadNotification(message, type = 'info') {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = `download-notification ${type}`;
+                notification.textContent = message;
+                
+                // Style the notification
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 80px;
+                    right: 20px;
+                    background: var(--surface-color);
+                    color: var(--text-color);
+                    padding: 12px 16px;
+                    border-radius: var(--border-radius-small);
+                    border: 1px solid var(--border-color);
+                    box-shadow: var(--shadow-secondary);
+                    z-index: 10000;
+                    max-width: 300px;
+                    font-size: 0.9rem;
+                    opacity: 0;
+                    transform: translateX(100%);
+                    transition: all 0.3s ease;
+                `;
+
+                // Add type-specific styling
+                if (type === 'success') {
+                    notification.style.borderColor = 'var(--success-color)';
+                } else if (type === 'error') {
+                    notification.style.borderColor = 'var(--error-color)';
+                } else if (type === 'info') {
+                    notification.style.borderColor = 'var(--info-color)';
+                }
+
+                document.body.appendChild(notification);
+
+                // Animate in
+                setTimeout(() => {
+                    notification.style.opacity = '1';
+                    notification.style.transform = 'translateX(0)';
+                }, 100);
+
+                // Auto remove after 3 seconds
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateX(100%)';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }, 3000);
+            }
+
+            // Update download progress (placeholder function for progress tracking)
+            function updateDownloadProgress(filename, progress) {
+                // This could be used to update a progress indicator in the main window
+                // For now, it's just a placeholder since progress is mainly shown in the downloads tab
+                console.log(`Download progress: ${filename} - ${Math.round(progress)}%`);
+            }
+
+            // Download notification system
+            let activeDownloadNotifications = new Map();
+
+            function showDownloadNotification(type, data) {
+                const notificationId = `download-${Date.now()}`;
+                const notification = document.createElement('div');
+                notification.className = `download-notification ${type}`;
+                notification.id = notificationId;
+
+                let iconClass, title, content;
+                
+                switch (type) {
+                    case 'started':
+                        iconClass = 'fas fa-download';
+                        title = 'Download Started';
+                        content = `<div class="download-notification-filename">${data.filename}</div>
+                                  <div>Size: ${data.size}</div>
+                                  <div class="download-notification-progress">
+                                      <div class="download-notification-progress-fill"></div>
+                                  </div>`;
+                        break;
+                    case 'completed':
+                        iconClass = 'fas fa-check';
+                        title = 'Download Completed';
+                        content = `<div class="download-notification-filename">${data.filename}</div>
+                                  <div>Downloaded successfully</div>`;
+                        break;
+                    case 'failed':
+                        iconClass = 'fas fa-exclamation-triangle';
+                        title = 'Download Failed';
+                        content = `<div class="download-notification-filename">${data.filename}</div>
+                                  <div>Error: ${data.error}</div>`;
+                        break;
+                }
+
+                notification.innerHTML = `
+                    <div class="download-notification-header">
+                        <div class="download-notification-icon">
+                            <i class="${iconClass}"></i>
+                        </div>
+                        <div class="download-notification-title">${title}</div>
+                        <button class="download-notification-close" onclick="closeDownloadNotification('${notificationId}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="download-notification-content">
+                        ${content}
+                    </div>
+                `;
+
+                document.body.appendChild(notification);
+
+                // Show animation
+                setTimeout(() => {
+                    notification.classList.add('show');
+                }, 100);
+
+                // Auto-hide after delay (except for ongoing downloads)
+                if (type !== 'started') {
+                    setTimeout(() => {
+                        closeDownloadNotification(notificationId);
+                    }, 5000);
+                } else {
+                    // Store reference for progress updates
+                    activeDownloadNotifications.set(data.filename, notificationId);
+                }
+
+                return notificationId;
+            }
+
+            function closeDownloadNotification(notificationId) {
+                const notification = document.getElementById(notificationId);
+                if (notification) {
+                    notification.classList.remove('show');
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }
+            }
+
+            function updateDownloadProgress(filename, progress) {
+                const notificationId = activeDownloadNotifications.get(filename);
+                if (notificationId) {
+                    const notification = document.getElementById(notificationId);
+                    if (notification) {
+                        const progressFill = notification.querySelector('.download-notification-progress-fill');
+                        if (progressFill) {
+                            progressFill.style.width = `${progress}%`;
+                        }
+                    }
+                }
+            }
+
+            // Listen for download events
+            if (window.electronAPI) {
+                if (window.electronAPI.onDownloadStarted) {
+                    window.electronAPI.onDownloadStarted((data) => {
+                        showDownloadNotification('started', data);
+                    });
+                }
+
+                if (window.electronAPI.onDownloadCompleted) {
+                    window.electronAPI.onDownloadCompleted((data) => {
+                        // Remove from active notifications
+                        const notificationId = activeDownloadNotifications.get(data.filename);
+                        if (notificationId) {
+                            closeDownloadNotification(notificationId);
+                            activeDownloadNotifications.delete(data.filename);
+                        }
+                        
+                        // Show completion notification
+                        showDownloadNotification('completed', data);
+                    });
+                }
+
+                if (window.electronAPI.onDownloadFailed) {
+                    window.electronAPI.onDownloadFailed((data) => {
+                        // Remove from active notifications
+                        const notificationId = activeDownloadNotifications.get(data.filename);
+                        if (notificationId) {
+                            closeDownloadNotification(notificationId);
+                            activeDownloadNotifications.delete(data.filename);
+                        }
+                        
+                        // Show failure notification
+                        showDownloadNotification('failed', data);
+                    });
+                }
+            }
+
+            // Expose functions globally for onclick handlers
+            window.closeDownloadNotification = closeDownloadNotification;
+
             // Check bookmark status when URL changes
             window.electronAPI.onUrlUpdate(async (url) => {
                 const bookmarkButton =
@@ -1376,10 +2883,30 @@
             });
 
             async function initializeTheme() {
-                // Başlangıçta dark mode'u aktif et
-                isLightMode = false;
-                await window.electronAPI.toggleDarkMode(true);
+                // Get saved theme from main process
+                const isDarkMode = await window.electronAPI.isDarkMode();
+                isLightMode = !isDarkMode;
                 updateTheme();
+            }
+
+            async function initializeFontSize() {
+                // Get saved font size from main process
+                const fontSize = await window.electronAPI.getFontSize();
+                applyFontSize(fontSize);
+            }
+
+            function applyFontSize(size) {
+                // Remove existing font size classes
+                document.documentElement.classList.remove('font-small', 'font-medium', 'font-large');
+                
+                // Add the new font size class
+                if (size === 'small') {
+                    document.documentElement.classList.add('font-small');
+                } else if (size === 'medium') {
+                    document.documentElement.classList.add('font-medium');
+                } else if (size === 'large') {
+                    document.documentElement.classList.add('font-large');
+                }
             }
 
             async function toggleDarkMode() {
@@ -1392,6 +2919,11 @@
             window.electronAPI.onThemeChange((isDarkMode) => {
                 isLightMode = !isDarkMode;
                 updateTheme();
+            });
+
+            // Font size değişikliklerini dinle
+            window.electronAPI.onFontSizeChange((fontSize) => {
+                applyFontSize(fontSize);
             });
 
             function updateTheme() {
@@ -1442,6 +2974,9 @@
 
                 // Initialize theme
                 await initializeTheme();
+
+                // Initialize font size
+                await initializeFontSize();
 
                 // Initialize URL and title display
                 try {
@@ -1506,6 +3041,706 @@
                     }
                 }, 1000); // Check every second for changes
             });
+
+            // Developer Console Functionality
+            let isDevConsoleOpen = false;
+            let currentDevPanel = 'console';
+            let consoleHistory = [];
+            let historyIndex = -1;
+            let networkLogs = [];
+            let consoleLogs = [];
+
+            // Developer Console Controls
+            function toggleDevConsole() {
+                isDevConsoleOpen = !isDevConsoleOpen;
+                const devConsole = document.getElementById('devConsole');
+                
+                if (isDevConsoleOpen) {
+                    devConsole.classList.remove('hidden');
+                    // Adjust content area height
+                    const contentArea = document.querySelector('.content-area');
+                    if (contentArea) {
+                        contentArea.style.height = '50vh';
+                    }
+                    // Focus console input if console panel is active
+                    if (currentDevPanel === 'console') {
+                        setTimeout(() => {
+                            document.getElementById('consoleInput').focus();
+                        }, 300);
+                    }
+                } else {
+                    devConsole.classList.add('hidden');
+                    // Restore content area height
+                    const contentArea = document.querySelector('.content-area');
+                    if (contentArea) {
+                        contentArea.style.height = '';
+                    }
+                }
+                
+                // Notify main process about dev tools state
+                if (window.electronAPI && window.electronAPI.toggleDevTools) {
+                    window.electronAPI.toggleDevTools(isDevConsoleOpen);
+                }
+            }
+
+            function switchDevPanel(panelName) {
+                // Update active tab
+                document.querySelectorAll('.dev-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelector(`[data-panel="${panelName}"]`).classList.add('active');
+                
+                // Update active panel
+                document.querySelectorAll('.dev-panel').forEach(panel => {
+                    panel.classList.remove('active');
+                });
+                document.getElementById(`${panelName}Panel`).classList.add('active');
+                
+                currentDevPanel = panelName;
+                
+                // Load panel-specific data
+                switch (panelName) {
+                    case 'elements':
+                        loadDOMTree();
+                        break;
+                    case 'network':
+                        updateNetworkPanel();
+                        break;
+                    case 'sources':
+                        loadSourceFiles();
+                        break;
+                    case 'application':
+                        loadApplicationData();
+                        break;
+                }
+            }
+
+            // Console Panel Functions
+            function executeConsoleCommand(command) {
+                if (!command.trim()) return;
+                
+                consoleHistory.push(command);
+                historyIndex = consoleHistory.length;
+                
+                // Add command to console output
+                addConsoleLog('> ' + command, 'log');
+                
+                try {
+                    // Simple JavaScript evaluation for demo purposes
+                    let result;
+                    
+                    // Built-in console commands
+                    if (command === 'clear') {
+                        clearConsole();
+                        return;
+                    } else if (command === 'help') {
+                        addConsoleLog('Available commands:\n- clear: Clear console\n- help: Show this help\n- location: Show current URL\n- document: Access document object\n- window: Access window object', 'info');
+                        return;
+                    } else if (command === 'location') {
+                        addConsoleLog(window.location.href, 'log');
+                        return;
+                    }
+                    
+                    // Simple expression evaluation
+                    result = eval(command);
+                    
+                    if (result !== undefined) {
+                        addConsoleLog(typeof result === 'object' ? JSON.stringify(result, null, 2) : String(result), 'log');
+                    }
+                } catch (error) {
+                    addConsoleLog(`Error: ${error.message}`, 'error');
+                }
+            }
+
+            function addConsoleLog(message, type = 'log') {
+                const output = document.getElementById('consoleOutput');
+                const logEntry = document.createElement('div');
+                logEntry.className = `console-log ${type}`;
+                logEntry.textContent = message;
+                
+                // Add timestamp
+                const timestamp = new Date().toLocaleTimeString();
+                logEntry.setAttribute('title', timestamp);
+                
+                output.appendChild(logEntry);
+                output.scrollTop = output.scrollHeight;
+                
+                consoleLogs.push({ message, type, timestamp });
+            }
+
+            function clearConsole() {
+                document.getElementById('consoleOutput').innerHTML = '';
+                consoleLogs = [];
+            }
+
+            // Elements Panel Functions
+            function loadDOMTree() {
+                const domTree = document.getElementById('domTree');
+                const currentDoc = document; // In a real implementation, this would be the active tab's document
+                
+                domTree.innerHTML = '';
+                
+                function createDOMNode(element, indent = 0) {
+                    const nodeDiv = document.createElement('div');
+                    nodeDiv.className = 'dom-element';
+                    nodeDiv.style.paddingLeft = (indent * 16) + 'px';
+                    
+                    let nodeText = `<${element.tagName.toLowerCase()}`;
+                    
+                    // Add important attributes
+                    if (element.id) nodeText += ` id="${element.id}"`;
+                    if (element.className) nodeText += ` class="${element.className}"`;
+                    
+                    nodeText += '>';
+                    
+                    nodeDiv.textContent = nodeText;
+                    nodeDiv.addEventListener('click', () => {
+                        document.querySelectorAll('.dom-element').forEach(el => el.classList.remove('selected'));
+                        nodeDiv.classList.add('selected');
+                        showElementStyles(element);
+                    });
+                    
+                    return nodeDiv;
+                }
+                
+                function traverseDOM(element, container, indent = 0) {
+                    if (element.nodeType === 1) { // Element node
+                        const nodeDiv = createDOMNode(element, indent);
+                        container.appendChild(nodeDiv);
+                        
+                        // Add children (limit depth for performance)
+                        if (indent < 3) {
+                            for (let child of element.children) {
+                                traverseDOM(child, container, indent + 1);
+                            }
+                        }
+                    }
+                }
+                
+                traverseDOM(currentDoc.documentElement, domTree);
+            }
+
+            function showElementStyles(element) {
+                const stylesContent = document.querySelector('#elementStyles .styles-content');
+                stylesContent.innerHTML = '';
+                
+                const computedStyles = window.getComputedStyle(element);
+                const importantStyles = [
+                    'display', 'position', 'top', 'left', 'width', 'height',
+                    'margin', 'padding', 'border', 'background-color', 'color',
+                    'font-size', 'font-family', 'z-index'
+                ];
+                
+                importantStyles.forEach(prop => {
+                    const value = computedStyles.getPropertyValue(prop);
+                    if (value) {
+                        const styleDiv = document.createElement('div');
+                        styleDiv.innerHTML = `<strong>${prop}:</strong> ${value}`;
+                        styleDiv.style.padding = '2px 0';
+                        styleDiv.style.fontSize = '11px';
+                        stylesContent.appendChild(styleDiv);
+                    }
+                });
+            }
+
+            // Network Panel Functions
+            function updateNetworkPanel() {
+                const networkBody = document.getElementById('networkBody');
+                networkBody.innerHTML = '';
+                
+                networkLogs.forEach(log => {
+                    const row = document.createElement('div');
+                    row.style.display = 'flex';
+                    row.style.borderBottom = '1px solid var(--border-color)';
+                    row.style.fontSize = '11px';
+                    row.style.color = 'var(--text-color)';
+                    
+                    row.innerHTML = `
+                        <span class="network-col name">${log.name}</span>
+                        <span class="network-col status">${log.status}</span>
+                        <span class="network-col type">${log.type}</span>
+                        <span class="network-col size">${log.size}</span>
+                        <span class="network-col time">${log.time}ms</span>
+                    `;
+                    
+                    networkBody.appendChild(row);
+                });
+            }
+
+            function addNetworkLog(url, status, type, size, time) {
+                const name = url.split('/').pop() || url;
+                networkLogs.push({ name, status, type, size, time, url });
+                if (currentDevPanel === 'network') {
+                    updateNetworkPanel();
+                }
+            }
+
+            function clearNetworkLogs() {
+                networkLogs = [];
+                updateNetworkPanel();
+            }
+
+            // Sources Panel Functions
+            function loadSourceFiles() {
+                const sourcesFiles = document.getElementById('sourcesFiles');
+                sourcesFiles.innerHTML = '';
+                
+                const files = [
+                    { name: 'index.html', type: 'html' },
+                    { name: 'style.css', type: 'css' },
+                    { name: 'script.js', type: 'javascript' }
+                ];
+                
+                files.forEach(file => {
+                    const fileDiv = document.createElement('div');
+                    fileDiv.textContent = file.name;
+                    fileDiv.style.padding = '4px 8px';
+                    fileDiv.style.cursor = 'pointer';
+                    fileDiv.style.fontSize = '11px';
+                    fileDiv.style.color = 'var(--text-secondary)';
+                    
+                    fileDiv.addEventListener('click', () => {
+                        showSourceCode(file);
+                    });
+                    
+                    fileDiv.addEventListener('mouseenter', () => {
+                        fileDiv.style.backgroundColor = 'var(--surface-light)';
+                    });
+                    
+                    fileDiv.addEventListener('mouseleave', () => {
+                        fileDiv.style.backgroundColor = '';
+                    });
+                    
+                    sourcesFiles.appendChild(fileDiv);
+                });
+            }
+
+            function showSourceCode(file) {
+                const sourceCode = document.getElementById('sourceCode');
+                
+                switch(file.type) {
+                    case 'html':
+                        sourceCode.textContent = document.documentElement.outerHTML;
+                        break;
+                    case 'css':
+                        sourceCode.textContent = '/* CSS would be shown here */';
+                        break;
+                    case 'javascript':
+                        sourceCode.textContent = '// JavaScript source would be shown here';
+                        break;
+                    default:
+                        sourceCode.textContent = `// Content of ${file.name}`;
+                }
+            }
+
+            // Application Panel Functions
+            function loadApplicationData() {
+                const storageBody = document.getElementById('storageBody');
+                storageBody.innerHTML = '';
+                
+                // Show localStorage by default
+                showStorageData('localStorage');
+            }
+
+            function showStorageData(storageType) {
+                const storageBody = document.getElementById('storageBody');
+                storageBody.innerHTML = '';
+                
+                let storage;
+                switch(storageType) {
+                    case 'localStorage':
+                        storage = localStorage;
+                        break;
+                    case 'sessionStorage':
+                        storage = sessionStorage;
+                        break;
+                    case 'cookies':
+                        showCookieData();
+                        return;
+                }
+                
+                for (let i = 0; i < storage.length; i++) {
+                    const key = storage.key(i);
+                    const value = storage.getItem(key);
+                    
+                    const row = document.createElement('div');
+                    row.style.display = 'flex';
+                    row.style.borderBottom = '1px solid var(--border-color)';
+                    row.style.fontSize = '11px';
+                    row.style.color = 'var(--text-color)';
+                    
+                    row.innerHTML = `
+                        <span class="storage-col key">${key}</span>
+                        <span class="storage-col value">${value}</span>
+                    `;
+                    
+                    storageBody.appendChild(row);
+                }
+                
+                if (storage.length === 0) {
+                    const emptyRow = document.createElement('div');
+                    emptyRow.textContent = `No ${storageType} data`;
+                    emptyRow.style.padding = '16px';
+                    emptyRow.style.textAlign = 'center';
+                    emptyRow.style.color = 'var(--text-secondary)';
+                    emptyRow.style.fontSize = '11px';
+                    storageBody.appendChild(emptyRow);
+                }
+            }
+
+            function showCookieData() {
+                const storageBody = document.getElementById('storageBody');
+                storageBody.innerHTML = '';
+                
+                const cookies = document.cookie.split(';');
+                
+                if (cookies.length === 1 && cookies[0] === '') {
+                    const emptyRow = document.createElement('div');
+                    emptyRow.textContent = 'No cookies';
+                    emptyRow.style.padding = '16px';
+                    emptyRow.style.textAlign = 'center';
+                    emptyRow.style.color = 'var(--text-secondary)';
+                    emptyRow.style.fontSize = '11px';
+                    storageBody.appendChild(emptyRow);
+                    return;
+                }
+                
+                cookies.forEach(cookie => {
+                    const [key, value] = cookie.split('=').map(s => s.trim());
+                    if (key) {
+                        const row = document.createElement('div');
+                        row.style.display = 'flex';
+                        row.style.borderBottom = '1px solid var(--border-color)';
+                        row.style.fontSize = '11px';
+                        row.style.color = 'var(--text-color)';
+                        
+                        row.innerHTML = `
+                            <span class="storage-col key">${key}</span>
+                            <span class="storage-col value">${value || ''}</span>
+                        `;
+                        
+                        storageBody.appendChild(row);
+                    }
+                });
+            }
+
+            // Global keyboard shortcuts (outside of DOMContentLoaded)
+            document.addEventListener('keydown', function(e) {
+                // Ctrl+Shift+I (Windows) or Cmd+Shift+I (Mac) to toggle dev console
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'I') {
+                    e.preventDefault();
+                    console.log('Developer console shortcut triggered');
+                    toggleDevConsole();
+                }
+                
+                // F12 alternative
+                if (e.key === 'F12') {
+                    e.preventDefault();
+                    console.log('F12 developer console shortcut triggered');
+                    toggleDevConsole();
+                }
+            });
+
+            // Event Listeners for Developer Console
+            document.addEventListener('DOMContentLoaded', function() {
+                
+                // Dev console tab switching
+                document.querySelectorAll('.dev-tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        switchDevPanel(tab.dataset.panel);
+                    });
+                });
+                
+                // Console input handling
+                const consoleInput = document.getElementById('consoleInput');
+                consoleInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        executeConsoleCommand(this.value);
+                        this.value = '';
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        if (historyIndex > 0) {
+                            historyIndex--;
+                            this.value = consoleHistory[historyIndex];
+                        }
+                    } else if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        if (historyIndex < consoleHistory.length - 1) {
+                            historyIndex++;
+                            this.value = consoleHistory[historyIndex];
+                        } else {
+                            historyIndex = consoleHistory.length;
+                            this.value = '';
+                        }
+                    }
+                });
+                
+                // Control buttons
+                document.getElementById('clearConsole').addEventListener('click', clearConsole);
+                document.getElementById('closeConsole').addEventListener('click', toggleDevConsole);
+                document.getElementById('clearNetwork').addEventListener('click', clearNetworkLogs);
+                
+                // Application panel storage items
+                document.querySelectorAll('.app-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        showStorageData(item.dataset.storage);
+                    });
+                });
+                
+                // Initialize with some sample data
+                addConsoleLog('Developer Console ready. Type "help" for available commands.', 'info');
+                
+                // Sample network logs for demo
+                setTimeout(() => {
+                    addNetworkLog('index.html', '200', 'document', '15.2 KB', 45);
+                    addNetworkLog('style.css', '200', 'stylesheet', '8.7 KB', 12);
+                    addNetworkLog('script.js', '200', 'script', '23.1 KB', 28);
+                }, 1000);
+                
+                // Image copy notifications
+                window.electronAPI.onImageCopied((result) => {
+                    if (result.success) {
+                        showToast('Image copied to clipboard!', 'success');
+                    } else {
+                        showToast('Failed to copy image: ' + (result.error || 'Unknown error'), 'error');
+                    }
+                });
+
+                window.electronAPI.onImageAddressCopied((result) => {
+                    if (result.success) {
+                        showToast('Image address copied to clipboard!', 'success');
+                    }
+                });
+
+                // Link copy notifications
+                window.electronAPI.onLinkCopied((result) => {
+                    if (result.success) {
+                        showToast('Link address copied to clipboard!', 'success');
+                    }
+                });
+
+                // Image save notifications
+                window.electronAPI.onImageSaved((result) => {
+                    if (result.success) {
+                        showToast('Image saved successfully!', 'success');
+                    } else {
+                        showToast('Failed to save image: ' + (result.error || 'Unknown error'), 'error');
+                    }
+                });
+            });
+
+            // Toast notification system
+            function showToast(message, type = 'info') {
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                toast.textContent = message;
+
+                const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+                toastContainer.appendChild(toast);
+
+                // Trigger animation
+                setTimeout(() => toast.classList.add('show'), 100);
+
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                    }, 300);
+                }, 3000);
+            }
+
+            function createToastContainer() {
+                const container = document.createElement('div');
+                container.id = 'toastContainer';
+                container.className = 'toast-container';
+                document.body.appendChild(container);
+                return container;
+            }
         </script>
+
+        <!-- Toast notification styles -->
+        <style>
+            .toast-container {
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                z-index: 600;
+                pointer-events: none;
+            }
+
+            .toast {
+                background-color: var(--surface-color);
+                color: var(--text-color);
+                padding: 12px 20px;
+                margin-bottom: 10px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                border-left: 4px solid var(--accent-color);
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                max-width: 300px;
+                font-size: 14px;
+                pointer-events: auto;
+            }
+
+            .toast.show {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            .toast-success {
+                border-left-color: #4CAF50;
+                background-color: rgba(76, 175, 80, 0.1);
+            }
+
+            .toast-error {
+                border-left-color: #f44336;
+                background-color: rgba(244, 67, 54, 0.1);
+            }
+
+            .toast-info {
+                border-left-color: #2196F3;
+                background-color: rgba(33, 150, 243, 0.1);
+            }
+
+            /* Light mode styles for toasts */
+            :root.light-mode .toast {
+                background-color: white;
+                color: #333;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            :root.light-mode .toast-success {
+                background-color: rgba(76, 175, 80, 0.1);
+                color: #2E7D32;
+            }
+
+            :root.light-mode .toast-error {
+                background-color: rgba(244, 67, 54, 0.1);
+                color: #C62828;
+            }
+
+            :root.light-mode .toast-info {
+                background-color: rgba(33, 150, 243, 0.1);
+                color: #1565C0;
+            }
+
+            /* Download notification styles */
+            .download-notification {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: var(--surface-color);
+                border: 1px solid var(--border-color);
+                border-radius: var(--border-radius);
+                padding: 16px 20px;
+                box-shadow: var(--shadow-primary);
+                z-index: 700;
+                min-width: 300px;
+                max-width: 400px;
+                backdrop-filter: blur(var(--blur-amount));
+                -webkit-backdrop-filter: blur(var(--blur-amount));
+                transform: translateX(100%);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                opacity: 0;
+            }
+
+            .download-notification.show {
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            .download-notification-header {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 8px;
+            }
+
+            .download-notification-icon {
+                width: 24px;
+                height: 24px;
+                background: var(--primary-gradient);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 12px;
+            }
+
+            .download-notification-title {
+                font-weight: 600;
+                color: var(--text-color);
+                font-size: 14px;
+            }
+
+            .download-notification-close {
+                margin-left: auto;
+                background: none;
+                border: none;
+                color: var(--text-secondary);
+                cursor: pointer;
+                padding: 4px;
+                border-radius: 4px;
+                transition: all 0.2s ease;
+            }
+
+            .download-notification-close:hover {
+                background: var(--surface-light);
+                color: var(--text-color);
+            }
+
+            .download-notification-content {
+                color: var(--text-secondary);
+                font-size: 13px;
+                line-height: 1.4;
+            }
+
+            .download-notification-filename {
+                color: var(--text-color);
+                font-weight: 500;
+                word-break: break-all;
+            }
+
+            .download-notification-progress {
+                width: 100%;
+                height: 4px;
+                background: var(--border-color);
+                border-radius: 2px;
+                margin-top: 8px;
+                overflow: hidden;
+            }
+
+            .download-notification-progress-fill {
+                height: 100%;
+                background: var(--info-color);
+                transition: width 0.3s ease;
+                width: 0%;
+            }
+
+            .download-notification.completed .download-notification-progress-fill {
+                background: var(--success-color);
+            }
+
+            .download-notification.failed .download-notification-progress-fill {
+                background: var(--error-color);
+            }
+
+            /* Light mode adjustments for download notifications */
+            :root.light-mode .download-notification {
+                background: white;
+                border-color: #e0e0e0;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            :root.light-mode .download-notification-icon {
+                background: var(--primary-color);
+            }
+        </style>
     </body>
 </html>

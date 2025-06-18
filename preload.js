@@ -24,16 +24,29 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.on("theme-changed", (_, isDarkMode) => callback(isDarkMode));
   },
 
+  // Font size yönetimi
+  setFontSize: (fontSize) => ipcRenderer.invoke("set-font-size", fontSize),
+  getFontSize: () => ipcRenderer.invoke("get-font-size"),
+  onFontSizeChange: (callback) => {
+    ipcRenderer.on("font-size-changed", (_, fontSize) => callback(fontSize));
+  },
+
   // Sekme yönetimi
   newTab: (url) => ipcRenderer.invoke("new-tab", url),
   switchTab: (viewId) => ipcRenderer.invoke("switch-tab", viewId),
   closeTab: (viewId) => ipcRenderer.invoke("close-tab", viewId),
+  reorderTabs: (newOrder) => ipcRenderer.invoke("reorder-tabs", newOrder),
   getCurrentUrl: () => ipcRenderer.invoke("get-current-url"),
   getCurrentTitle: () => ipcRenderer.invoke("get-current-title"),
 
   // Ayarlar
   openSettings: () => ipcRenderer.invoke("open-settings"),
   closeWindow: () => ipcRenderer.invoke("close-window"),
+  getSettings: () => ipcRenderer.invoke("get-settings"),
+  saveSettings: (settings) => ipcRenderer.invoke("save-settings", settings),
+  clearAllDataNow: () => ipcRenderer.invoke("clear-all-data-now"),
+  getClearOnExitStatus: () => ipcRenderer.invoke("get-clear-on-exit-status"),
+  setClearOnExit: (enabled) => ipcRenderer.invoke("set-clear-on-exit", enabled),
 
   // Yer imleri
   getBookmarks: () => ipcRenderer.invoke("get-bookmarks"),
@@ -71,7 +84,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
   // Ayarlar için özel metod
   openSettingsTab: (section) =>
-    ipcRenderer.invoke("open-settings-tab", section),
+    ipcRenderer.invoke("openSettingsTab", section),
+  openDownloadsTab: () =>
+    ipcRenderer.invoke("open-downloads-tab"),
 
   // Diğer işlevler buraya eklenebilir
   googleSignOut: () => ipcRenderer.invoke("google-sign-out"),
@@ -79,4 +94,71 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
   // URL açma
   openUrl: (url) => ipcRenderer.invoke("open-url", url),
+  
+  // Quick Search Overlay
+  showQuickSearch: () => ipcRenderer.invoke("show-quick-search"),
+  hideQuickSearch: () => ipcRenderer.invoke("hide-quick-search"),
+  performOverlaySearch: (query) => ipcRenderer.invoke("perform-overlay-search", query),
+  
+  // Developer Tools
+  toggleDevTools: (isOpen) => ipcRenderer.invoke("toggle-dev-tools", isOpen),
+  executeJavaScript: (code) => ipcRenderer.invoke("execute-javascript", code),
+  getPageSource: () => ipcRenderer.invoke("get-page-source"),
+  getConsoleMessages: () => ipcRenderer.invoke("get-console-messages"),
+  clearConsoleMessages: () => ipcRenderer.invoke("clear-console-messages"),
+  onConsoleMessage: (callback) => {
+    const handler = (_, message) => callback(message);
+    ipcRenderer.on("console-message", handler);
+    return () => ipcRenderer.removeListener("console-message", handler);
+  },
+
+  // Image copy notifications
+  onImageCopied: (callback) => {
+    const handler = (_, result) => callback(result);
+    ipcRenderer.on("image-copied", handler);
+    return () => ipcRenderer.removeListener("image-copied", handler);
+  },
+  onImageAddressCopied: (callback) => {
+    const handler = (_, result) => callback(result);
+    ipcRenderer.on("image-address-copied", handler);
+    return () => ipcRenderer.removeListener("image-address-copied", handler);
+  },
+  onLinkCopied: (callback) => {
+    const handler = (_, result) => callback(result);
+    ipcRenderer.on("link-copied", handler);
+    return () => ipcRenderer.removeListener("link-copied", handler);
+  },
+  onImageSaved: (callback) => {
+    const handler = (_, result) => callback(result);
+    ipcRenderer.on("image-saved", handler);
+    return () => ipcRenderer.removeListener("image-saved", handler);
+  },
+
+  // Downloads management
+  getDownloads: () => ipcRenderer.invoke("get-downloads"),
+  clearCompletedDownloads: () => ipcRenderer.invoke("clear-completed-downloads"),
+  removeDownload: (downloadId) => ipcRenderer.invoke("remove-download", downloadId),
+  openDownloadFolder: () => ipcRenderer.invoke("open-download-folder"),
+  openFile: (filePath) => ipcRenderer.invoke("open-file", filePath),
+  showInFolder: (filePath) => ipcRenderer.invoke("show-in-folder", filePath),
+  onDownloadUpdate: (callback) => {
+    const handler = (_, downloads) => callback(downloads);
+    ipcRenderer.on("download-update", handler);
+    return () => ipcRenderer.removeListener("download-update", handler);
+  },
+  onDownloadStarted: (callback) => {
+    const handler = (_, data) => callback(data);
+    ipcRenderer.on("download-started", handler);
+    return () => ipcRenderer.removeListener("download-started", handler);
+  },
+  onDownloadCompleted: (callback) => {
+    const handler = (_, data) => callback(data);
+    ipcRenderer.on("download-completed", handler);
+    return () => ipcRenderer.removeListener("download-completed", handler);
+  },
+  onDownloadFailed: (callback) => {
+    const handler = (_, data) => callback(data);
+    ipcRenderer.on("download-failed", handler);
+    return () => ipcRenderer.removeListener("download-failed", handler);
+  },
 });

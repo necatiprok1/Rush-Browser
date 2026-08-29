@@ -1,5 +1,6 @@
-# Documentation
-*.md
+```
+# Dependencies
+node_modules/
 
 # Logs and temp files
 *.log
@@ -14,33 +15,8 @@
 .vscode/
 .idea/
 
-# Dependencies
-node_modules/
-venv/
-.venv/
-__pycache__/
-.mypy_cache/
-.pytest_cache/
+# Build artifacts
 dist/
 build/
-target/
-.gradle/
-
-# Compiled files
-*.pyc
-*.class
-*.o
-*.exe
-*.dll
-*.so
-*.a
-*.obj
-*.out
-
-# System files
-.DS_Store
-Thumbs.db
-coverage/
-htmlcov/
-*.swp
-*.swo
+*.js.map
+```

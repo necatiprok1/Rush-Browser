@@ -4,7 +4,8 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node -c main.js && echo \"✓ Syntax check passed\"",
+    "lint": "node -c main.js"
   },
   "keywords": [],
   "author": "",

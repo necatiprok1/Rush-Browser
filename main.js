@@ -12,17 +12,7 @@ try {
 // Event listener sınırını artır
 require("events").EventEmitter.defaultMaxListeners = 30;
 
-// Register custom schemes before app ready
-// Bu fonksiyon app hazır olmadan önce çağrılmalı ama modüller yüklendikten sonra
-const registerSchemes = () => {
-  const { protocol } = require("electron");
-  protocol.registerSchemesAsPrivileged([
-    { scheme: 'rush', privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } }
-  ]);
-};
-
-registerSchemes();
-
+// Electron modüllerini import et
 const {
   app,
   BrowserWindow,
@@ -35,7 +25,13 @@ const {
   clipboard,
   nativeImage,
   net,
+  protocol,
 } = require("electron");
+
+// Register custom schemes before app ready
+protocol.registerSchemesAsPrivileged([
+  { scheme: 'rush', privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } }
+]);
 
 const keytar = require("keytar");
 
@@ -689,8 +685,8 @@ function createWindow() {
   session.defaultSession.removeAllListeners('will-download');
   session.defaultSession.on('will-download', globalDownloadHandler);
   
-  // Performance: Enable HTTP/3 and QUIC protocols
-  session.defaultSession.enableNetworkService();
+  // Performance: Enable HTTP/3 and QUIC protocols (removed deprecated enableNetworkService)
+  // Network service is enabled by default in Electron 36+
   
   // Security & Privacy: Enhanced tracker blocking with expanded list
   const blockedDomains = [

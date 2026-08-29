@@ -1,3 +1,28 @@
+const path = require("path");
+const fs = require("fs");
+
+// ESM ve CommonJS uyumlu import
+let Store;
+try {
+  Store = require("electron-store").default;
+} catch {
+  Store = require("electron-store");
+}
+
+// Event listener sınırını artır
+require("events").EventEmitter.defaultMaxListeners = 30;
+
+// Register custom schemes before app ready
+// Bu fonksiyon app hazır olmadan önce çağrılmalı ama modüller yüklendikten sonra
+const registerSchemes = () => {
+  const { protocol } = require("electron");
+  protocol.registerSchemesAsPrivileged([
+    { scheme: 'rush', privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } }
+  ]);
+};
+
+registerSchemes();
+
 const {
   app,
   BrowserWindow,
@@ -10,24 +35,11 @@ const {
   clipboard,
   nativeImage,
   net,
-  protocol,
 } = require("electron");
-const path = require("path");
-const fs = require("fs");
+
 const keytar = require("keytar");
 
-// Register custom schemes before app ready
-protocol.registerSchemesAsPrivileged([
-  { scheme: 'rush', privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } }
-]);
-
-// ESM ve CommonJS uyumlu import
-let Store;
-try {
-  Store = require("electron-store").default;
-} catch {
-  Store = require("electron-store");
-}
+// Store initialization after electron imports
 const store = new Store({
   name: "browser-settings",
   defaults: {
@@ -35,9 +47,6 @@ const store = new Store({
     "user-info": null,
   },
 });
-
-// Event listener sınırını artır
-require("events").EventEmitter.defaultMaxListeners = 30;
 
 let mainWindow;
 let overlayWindow; // Floating search overlay window

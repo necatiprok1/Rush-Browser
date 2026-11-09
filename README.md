@@ -68,7 +68,6 @@ Both checks currently run a Node.js syntax check against `main.js`.
 ├── settings.html
 ├── downloads.html
 ├── overlay.html
-├── settings.html
 ├── style.css
 ├── AI_SMART_FEATURES.md
 ├── IMPLEMENTATION_SUMMARY.md

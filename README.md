@@ -66,12 +66,18 @@ Both checks currently run a Node.js syntax check against `main.js`.
 ├── index.html
 ├── search.html
 ├── settings.html
+├── downloads.html
 ├── overlay.html
+├── settings.html
 ├── style.css
-└── documentation/
+├── AI_SMART_FEATURES.md
+├── IMPLEMENTATION_SUMMARY.md
+├── PERFORMANCE_OPTIMIZATIONS.md
+├── SECURITY_PRIVACY_OPTIMIZATIONS.md
+└── RUN_AND_TEST.md
 ```
 
-The repository also contains implementation notes covering performance, privacy, smart features, fixes, and testing.
+Implementation notes and test instructions are kept as Markdown files in the repository root.
 
 ## Security
 

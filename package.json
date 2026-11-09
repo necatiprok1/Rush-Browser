@@ -7,8 +7,15 @@
     "test": "node -c main.js && echo \"✓ Syntax check passed\"",
     "lint": "node -c main.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "electron",
+    "desktop-browser",
+    "browser",
+    "productivity",
+    "privacy",
+    "javascript"
+  ],
+  "author": "TheDarkDev",
   "license": "ISC",
   "dependencies": {
     "@electron/remote": "^2.1.2",
@@ -20,5 +27,5 @@
     "electron": "^36.4.0",
     "electron-builder": "^26.0.12"
   },
-  "description": ""
+  "description": "A customizable Electron desktop browser experiment focused on productivity, workspaces, and privacy-oriented browsing."
 }
